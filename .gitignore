@@ -1,0 +1,18 @@
+# Visual Studio / .NET
+bin/
+obj/
+.vs/
+*.user
+
+# Fotos subidas (se versiona solo la carpeta)
+web/uploads/*
+!web/uploads/.gitkeep
+
+# Archivos y carpetas que no son de este proyecto
+*.zip
+*.exe
+asistencia_escritorio/
+
+# Configuración local de Claude
+.claude/
+web/.claude/

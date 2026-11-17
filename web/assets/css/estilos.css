@@ -1,0 +1,50 @@
+/* Colores de la marca Eric Clima y Servicios */
+:root {
+    --marca: #005caf;
+    --marca-oscuro: #00468c;
+    --marca-claro: #e8f1fb;
+}
+
+.bg-marca { background-color: var(--marca) !important; }
+.text-marca { color: var(--marca) !important; }
+.btn-marca { background-color: var(--marca); border-color: var(--marca); color: #fff; }
+.btn-marca:hover { background-color: var(--marca-oscuro); border-color: var(--marca-oscuro); color: #fff; }
+
+/* ---- Sitio público ---- */
+.hero {
+    background: linear-gradient(135deg, var(--marca) 0%, var(--marca-oscuro) 100%);
+    color: #fff;
+    padding: 96px 0 80px;
+}
+.hero .lead { opacity: .9; }
+
+section { scroll-margin-top: 70px; }
+.seccion { padding: 72px 0; }
+.seccion-alt { background: var(--marca-claro); }
+
+.tarjeta-servicio { border: 0; border-top: 4px solid var(--marca); transition: transform .15s; }
+.tarjeta-servicio:hover { transform: translateY(-4px); }
+
+.paso-numero {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--marca); color: #fff; font-weight: 700; font-size: 1.25rem;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+
+.galeria img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; }
+.galeria-vacia {
+    height: 220px; border-radius: 8px; border: 2px dashed #b8cde3;
+    display: flex; align-items: center; justify-content: center; color: #6c84a0; background: #fff;
+}
+
+.boton-whatsapp {
+    position: fixed; right: 20px; bottom: 20px; z-index: 1000;
+    background: #25d366; color: #fff; border-radius: 50px; padding: 12px 20px;
+    font-weight: 600; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+.boton-whatsapp:hover { background: #1ebe5b; color: #fff; }
+
+/* ---- Panel ---- */
+.tarjeta-numero .numero { font-size: 2rem; font-weight: 700; color: var(--marca); }
+.fila-stock-bajo td { background-color: #fde2e2 !important; }
+.barra { background: var(--marca); height: 18px; border-radius: 4px; min-width: 2px; }

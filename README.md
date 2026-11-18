@@ -2,6 +2,7 @@
 
 Sistema de gestión para un servicio técnico de instalación y reparación de aires acondicionados de Bahía Blanca.
 Proyecto final de 7.º 6.ª Programación — E.E.S.T. N.º 1 — 2026.
+Alumno: Alejandro Aguilar Villan.
 
 El sistema tiene dos partes que comparten **una misma base de datos MySQL/MariaDB**:
 

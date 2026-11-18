@@ -3,7 +3,6 @@ using EricClima.Escritorio.Models;
 
 namespace EricClima.Escritorio.Views
 {
-    /// <summary>Listado de clientes con búsqueda, alta, edición y baja.</summary>
     public class FrmClientes : Form
     {
         private readonly ClienteController controller = new ClienteController();
@@ -14,7 +13,7 @@ namespace EricClima.Escritorio.Views
         public FrmClientes()
         {
             Ui.Preparar(this, "Clientes", 820, 480);
-            txtBuscar.TextChanged += (s, e) => Cargar(); // busca mientras escribís
+            txtBuscar.TextChanged += (s, e) => Cargar();
             grilla.CellDoubleClick += (s, e) => Editar(s, e);
 
             Controls.Add(grilla);
@@ -33,7 +32,6 @@ namespace EricClima.Escritorio.Views
             try
             {
                 clientes = controller.Buscar(txtBuscar.Text);
-                // Se muestran solo las columnas que le sirven al usuario
                 grilla.DataSource = clientes.Select(c => new
                 {
                     c.Nombre, Teléfono = c.Telefono, Dirección = c.Direccion, c.Localidad, c.Email
@@ -42,7 +40,6 @@ namespace EricClima.Escritorio.Views
             catch (Exception ex) { Ui.Aviso("No se pudo cargar la lista: " + ex.Message); }
         }
 
-        /// <summary>Devuelve el cliente de la fila seleccionada (o null).</summary>
         private Cliente Seleccionado() =>
             grilla.CurrentRow == null ? null : clientes[grilla.CurrentRow.Index];
 
@@ -71,7 +68,6 @@ namespace EricClima.Escritorio.Views
         }
     }
 
-    /// <summary>Alta y modificación de un cliente (ventana modal).</summary>
     public class FrmClienteEditar : Form
     {
         private readonly ClienteController controller = new ClienteController();
@@ -90,7 +86,6 @@ namespace EricClima.Escritorio.Views
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
 
-            // Pasar los datos del objeto a los controles
             txtNombre.Text = c.Nombre;
             txtTelefono.Text = c.Telefono;
             txtEmail.Text = c.Email;
@@ -99,8 +94,8 @@ namespace EricClima.Escritorio.Views
 
             var btnGuardar = Ui.Boton("Guardar", Guardar, principal: true);
             var btnCancelar = Ui.Boton("Cancelar", (s, e) => Close());
-            AcceptButton = btnGuardar;  // Enter guarda
-            CancelButton = btnCancelar; // Esc cancela
+            AcceptButton = btnGuardar;
+            CancelButton = btnCancelar;
 
             Controls.Add(Ui.Campos(
                 ("Nombre *", txtNombre), ("Teléfono *", txtTelefono), ("Email", txtEmail),
@@ -110,7 +105,6 @@ namespace EricClima.Escritorio.Views
 
         private void Guardar(object sender, EventArgs e)
         {
-            // Pasar los controles al objeto y que el controlador decida
             cliente.Nombre = txtNombre.Text;
             cliente.Telefono = txtTelefono.Text;
             cliente.Email = txtEmail.Text;
@@ -121,7 +115,6 @@ namespace EricClima.Escritorio.Views
             errores.Clear();
             if (!r.Ok)
             {
-                // Ícono rojo al lado del campo que falló
                 Control campo = r.Mensaje.Contains("nombre") ? txtNombre
                               : r.Mensaje.Contains("teléfono") ? txtTelefono
                               : r.Mensaje.Contains("email") ? txtEmail

@@ -3,7 +3,6 @@ using MySqlConnector;
 
 namespace EricClima.Escritorio.Data
 {
-    /// <summary>Acceso a las tablas presupuestos y presupuesto_items.</summary>
     public class PresupuestoRepositorio
     {
         private const string Consulta =
@@ -37,10 +36,6 @@ namespace EricClima.Escritorio.Data
             return p;
         }
 
-        /// <summary>
-        /// Guarda el encabezado y todos los ítems en una TRANSACCIÓN:
-        /// si falla un ítem, no queda un presupuesto a medias.
-        /// </summary>
         public int Insertar(Presupuesto p)
         {
             using var cn = Conexion.Abrir();
@@ -51,7 +46,7 @@ namespace EricClima.Escritorio.Data
                     "INSERT INTO presupuestos (cliente_id, fecha, vence, total) VALUES (@cli, @fecha, @vence, @total)", cn, tx);
                 cab.Parameters.AddWithValue("@cli", p.ClienteId);
                 cab.Parameters.AddWithValue("@fecha", p.Fecha.Date);
-                cab.Parameters.AddWithValue("@vence", (object)p.Vence?.Date ?? DBNull.Value); // NULL → el trigger pone +15 días
+                cab.Parameters.AddWithValue("@vence", (object)p.Vence?.Date ?? DBNull.Value);
                 cab.Parameters.AddWithValue("@total", p.Total());
                 cab.ExecuteNonQuery();
                 int id = (int)cab.LastInsertedId;
@@ -86,7 +81,6 @@ namespace EricClima.Escritorio.Data
             cmd.ExecuteNonQuery();
         }
 
-        /// <summary>Marca como vencidos los pendientes cuya fecha de vencimiento ya pasó.</summary>
         public void MarcarVencidos()
         {
             using var cn = Conexion.Abrir();

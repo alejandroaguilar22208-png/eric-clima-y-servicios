@@ -5,7 +5,6 @@ namespace EricClima.Escritorio.Data
 {
     public class TrabajoRepositorio
     {
-        // JOIN para traer también el nombre del cliente, del servicio y del técnico
         private const string Select =
             "SELECT t.id, t.cliente_id, c.nombre AS cliente, t.servicio_id, s.nombre AS servicio, " +
             "t.tecnico_id, u.nombre AS tecnico, t.fecha_agendada, t.estado, t.total, " +
@@ -15,7 +14,6 @@ namespace EricClima.Escritorio.Data
             "JOIN servicios s ON s.id = t.servicio_id " +
             "LEFT JOIN usuarios u ON u.id = t.tecnico_id ";
 
-        /// <summary>Lista trabajos; si estado es null trae todos.</summary>
         public List<Trabajo> Listar(EstadoTrabajo? estado)
         {
             using var cn = Conexion.Abrir();
@@ -55,10 +53,6 @@ namespace EricClima.Escritorio.Data
             cmd.ExecuteNonQuery();
         }
 
-        /// <summary>
-        /// Cambia el estado. Las reglas RN-03, RN-04 y RN-05 las controla
-        /// también el TRIGGER de la base: si no se cumplen, MySQL tira error.
-        /// </summary>
         public void CambiarEstado(int trabajoId, EstadoTrabajo estado)
         {
             using var cn = Conexion.Abrir();
@@ -68,7 +62,6 @@ namespace EricClima.Escritorio.Data
             cmd.ExecuteNonQuery();
         }
 
-        /// <summary>RN-02: si no hay stock, el trigger de la base rechaza el INSERT.</summary>
         public void AgregarMaterial(int trabajoId, int materialId, decimal cantidad)
         {
             using var cn = Conexion.Abrir();
@@ -81,7 +74,6 @@ namespace EricClima.Escritorio.Data
             cmd.ExecuteNonQuery();
         }
 
-        /// <summary>Texto con los materiales cargados en un trabajo.</summary>
         public List<string> MaterialesDe(int trabajoId)
         {
             using var cn = Conexion.Abrir();

@@ -3,7 +3,6 @@ using EricClima.Escritorio.Models;
 
 namespace EricClima.Escritorio.Views
 {
-    /// <summary>Stock de materiales. Las filas en rojo tienen stock bajo.</summary>
     public class FrmMateriales : Form
     {
         private readonly StockController controller = new StockController();
@@ -39,7 +38,6 @@ namespace EricClima.Escritorio.Views
             catch (Exception ex) { Ui.Aviso("No se pudo cargar el stock: " + ex.Message); }
         }
 
-        /// <summary>RN-11: resalta en rojo los materiales con stock bajo.</summary>
         private void Pintar()
         {
             for (int i = 0; i < grilla.Rows.Count; i++)

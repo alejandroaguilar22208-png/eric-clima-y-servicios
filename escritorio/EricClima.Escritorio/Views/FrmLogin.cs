@@ -2,7 +2,6 @@ using EricClima.Escritorio.Controllers;
 
 namespace EricClima.Escritorio.Views
 {
-    /// <summary>VISTA de ingreso. Solo junta los datos y le pregunta al controlador.</summary>
     public class FrmLogin : Form
     {
         private readonly UsuarioController controller = new UsuarioController();
@@ -27,7 +26,7 @@ namespace EricClima.Escritorio.Views
                 BackColor = Ui.Azul
             };
             var btnIngresar = Ui.Boton("Ingresar", Ingresar, principal: true);
-            AcceptButton = btnIngresar; // Enter = ingresar
+            AcceptButton = btnIngresar;
 
             Controls.Add(Ui.Campos(("Email", txtEmail), ("Contraseña", txtClave)));
             Controls.Add(Ui.Barra(DockStyle.Bottom, btnIngresar));
@@ -38,7 +37,7 @@ namespace EricClima.Escritorio.Views
         {
             Resultado r = controller.Login(txtEmail.Text, txtClave.Text);
             if (!r.Ok) { Ui.Mostrar(r); txtClave.Clear(); txtClave.Focus(); return; }
-            DialogResult = DialogResult.OK; // cierra el login y Program.cs abre el menú
+            DialogResult = DialogResult.OK;
         }
     }
 }

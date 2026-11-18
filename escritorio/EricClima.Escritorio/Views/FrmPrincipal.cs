@@ -3,7 +3,6 @@ using EricClima.Escritorio.Models;
 
 namespace EricClima.Escritorio.Views
 {
-    /// <summary>Ventana principal: menú lateral y panel de alertas.</summary>
     public class FrmPrincipal : Form
     {
         private readonly StockController stock = new StockController();
@@ -15,7 +14,6 @@ namespace EricClima.Escritorio.Views
             Ui.Preparar(this, "Menú principal", 900, 560);
             StartPosition = FormStartPosition.CenterScreen;
 
-            // ---- Menú lateral ----
             var menu = new FlowLayoutPanel
             {
                 Dock = DockStyle.Left, Width = 200, BackColor = Ui.Azul,
@@ -33,7 +31,6 @@ namespace EricClima.Escritorio.Views
             menu.Controls.Add(BotonMenu("Ayuda (F1)", (s, e) => AbrirAyuda()));
             menu.Controls.Add(BotonMenu("Salir", (s, e) => Close()));
 
-            // ---- Panel central ----
             var bienvenida = new Label
             {
                 Text = $"Hola, {Sesion.UsuarioActual.Nombre} ({Sesion.UsuarioActual.Rol})",
@@ -53,7 +50,7 @@ namespace EricClima.Escritorio.Views
             Controls.Add(bienvenida);
             Controls.Add(menu);
 
-            Activated += (s, e) => CargarAlertas(); // se actualiza cada vez que volvés al menú
+            Activated += (s, e) => CargarAlertas();
             KeyDown += (s, e) => { if (e.KeyCode == Keys.F1) AbrirAyuda(); };
         }
 
@@ -96,7 +93,6 @@ namespace EricClima.Escritorio.Views
             catch (Exception ex) { lstAlertas.Items.Add("No se pudo conectar a la base: " + ex.Message); }
         }
 
-        /// <summary>El manual se abre desde el sistema (lo pide la consigna).</summary>
         private void AbrirAyuda()
         {
             string ruta = Path.Combine(AppContext.BaseDirectory, "Manual.pdf");

@@ -4,13 +4,6 @@ using MySqlConnector;
 
 namespace EricClima.Escritorio.Controllers
 {
-    // =========================================================
-    // CONTROLADOR (la "C" de MVC): recibe lo que pide la Vista,
-    // aplica las reglas de negocio y usa los Repositorios.
-    // Los formularios NUNCA escriben SQL: siempre pasan por acá.
-    // =========================================================
-
-    /// <summary>Respuesta simple de cada operación: si salió bien y un mensaje.</summary>
     public class Resultado
     {
         public bool Ok { get; }
@@ -19,12 +12,11 @@ namespace EricClima.Escritorio.Controllers
         public static Resultado Bien(string m = "Operación realizada.") => new Resultado(true, m);
         public static Resultado Error(string m) => new Resultado(false, m);
 
-        /// <summary>Traduce los errores de MySQL a mensajes entendibles.</summary>
         public static Resultado DesdeExcepcion(Exception ex)
         {
             if (ex is MySqlException my)
             {
-                if (my.Number == 1644) return Error(my.Message); // mensaje del TRIGGER (regla de negocio)
+                if (my.Number == 1644) return Error(my.Message);
                 if (my.Number == 1062) return Error("Ya existe un registro con esos datos (por ejemplo, el técnico ya tiene un trabajo en ese horario).");
                 if (my.Number == 1451) return Error("No se puede borrar: tiene datos relacionados.");
                 return Error("Error de base de datos: " + my.Message);
@@ -33,7 +25,6 @@ namespace EricClima.Escritorio.Controllers
         }
     }
 
-    /// <summary>Guarda quién inició sesión (se usa en todo el sistema).</summary>
     public static class Sesion
     {
         public static Usuario UsuarioActual { get; set; }
@@ -51,7 +42,6 @@ namespace EricClima.Escritorio.Controllers
             try
             {
                 Usuario u = repo.ObtenerPorEmail(email);
-                // Mismo mensaje para los dos casos: no le decimos a un intruso cuál falló
                 if (u == null || !u.Activo || !u.VerificarClave(clave))
                     return Resultado.Error("Usuario o contraseña incorrectos.");
                 Sesion.UsuarioActual = u;
@@ -71,7 +61,7 @@ namespace EricClima.Escritorio.Controllers
 
         public Resultado Guardar(Cliente c)
         {
-            string error = c.Validar();          // validación en el Modelo
+            string error = c.Validar();
             if (error != "") return Resultado.Error(error);
             try
             {
@@ -82,7 +72,6 @@ namespace EricClima.Escritorio.Controllers
             catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
         }
 
-        /// <summary>RN-09: solo el administrador puede dar de baja.</summary>
         public Resultado DarDeBaja(int id)
         {
             if (!Sesion.EsAdmin) return Resultado.Error("Solo el administrador puede dar de baja clientes.");
@@ -101,7 +90,6 @@ namespace EricClima.Escritorio.Controllers
 
         public Resultado Crear(Trabajo t)
         {
-            // RN-01: no hay trabajo sin cliente
             if (t.ClienteId <= 0) return Resultado.Error("Elegí un cliente.");
             if (t.ServicioId <= 0) return Resultado.Error("Elegí un servicio.");
             if (t.Total < 0) return Resultado.Error("El total no puede ser negativo.");
@@ -123,13 +111,11 @@ namespace EricClima.Escritorio.Controllers
             if (t.EstaCerrado()) return Resultado.Error("Ese trabajo ya está cerrado.");
             if (m == null) return Resultado.Error("Elegí un material.");
             if (cantidad <= 0) return Resultado.Error("La cantidad debe ser mayor a 0.");
-            // RN-02 (también la controla el trigger de la base)
             if (cantidad > m.StockActual) return Resultado.Error($"Stock insuficiente: hay {m.StockActual} {m.Unidad}.");
             try { repo.AgregarMaterial(t.Id, m.Id, cantidad); return Resultado.Bien("Material agregado al trabajo."); }
             catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
         }
 
-        /// <summary>RN-03/RN-04: al cerrar se descuenta stock y se fija la garantía (lo hace el trigger).</summary>
         public Resultado MarcarRealizado(Trabajo t)
         {
             if (t.EstaCerrado()) return Resultado.Error("Ese trabajo ya está cerrado.");
@@ -175,7 +161,7 @@ namespace EricClima.Escritorio.Controllers
 
         public List<Presupuesto> Listar()
         {
-            repo.MarcarVencidos(); // antes de mostrar, actualiza los que ya pasaron su fecha
+            repo.MarcarVencidos();
             return repo.Listar();
         }
 
@@ -187,13 +173,12 @@ namespace EricClima.Escritorio.Controllers
             {
                 p.Id = repo.Insertar(p);
                 Presupuesto guardado = repo.ObtenerPorId(p.Id);
-                p.Vence = guardado.Vence; // la fecha que puso el trigger
+                p.Vence = guardado.Vence;
                 return Resultado.Bien($"Presupuesto N.º {p.Id} guardado. Vence el {p.Vence:dd/MM/yyyy}.");
             }
             catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
         }
 
-        /// <summary>Solo se puede aceptar o rechazar un presupuesto pendiente.</summary>
         public Resultado CambiarEstado(Presupuesto p, EstadoPresupuesto nuevo)
         {
             if (p.Estado != EstadoPresupuesto.Pendiente)
@@ -207,7 +192,6 @@ namespace EricClima.Escritorio.Controllers
             catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
         }
 
-        /// <summary>Genera el PDF del presupuesto en la ruta elegida.</summary>
         public Resultado ExportarPdf(Presupuesto p, string ruta)
         {
             try

@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- El manual se copia al lado del .exe para que F1 lo abra -->
     <None Update="Manual.pdf" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

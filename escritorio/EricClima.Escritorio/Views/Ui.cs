@@ -2,10 +2,6 @@ using EricClima.Escritorio.Controllers;
 
 namespace EricClima.Escritorio.Views
 {
-    /// <summary>
-    /// Ayudante de VISTA: crea controles con el mismo estilo en todas
-    /// las pantallas (lineamientos de interfaz). No tiene lógica de negocio.
-    /// </summary>
     public static class Ui
     {
         public static readonly Color Azul = Color.FromArgb(0, 92, 175);
@@ -15,7 +11,6 @@ namespace EricClima.Escritorio.Views
         public static readonly Color Gris = Color.FromArgb(235, 235, 235);
         public static readonly Font Fuente = new Font("Segoe UI", 10F);
 
-        /// <summary>Configuración común de todas las ventanas.</summary>
         public static void Preparar(Form f, string titulo, int ancho, int alto)
         {
             f.Text = $"{titulo} - Eric Clima y Servicios";
@@ -58,7 +53,6 @@ namespace EricClima.Escritorio.Views
             BorderStyle = BorderStyle.None
         };
 
-        /// <summary>Barra horizontal de botones (arriba o abajo de la ventana).</summary>
         public static FlowLayoutPanel Barra(DockStyle dock, params Control[] controles)
         {
             var p = new FlowLayoutPanel { Dock = dock, AutoSize = true, Padding = new Padding(8), BackColor = AzulClaro };
@@ -66,7 +60,6 @@ namespace EricClima.Escritorio.Views
             return p;
         }
 
-        /// <summary>Arma un formulario de dos columnas: etiqueta | campo.</summary>
         public static TableLayoutPanel Campos(params (string etiqueta, Control campo)[] filas)
         {
             var t = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(16), AutoScroll = true };
@@ -90,7 +83,6 @@ namespace EricClima.Escritorio.Views
             Value = valor
         };
 
-        /// <summary>Muestra el resultado de una operación del controlador.</summary>
         public static void Mostrar(Resultado r) =>
             MessageBox.Show(r.Mensaje, r.Ok ? "Listo" : "Atención", MessageBoxButtons.OK,
                 r.Ok ? MessageBoxIcon.Information : MessageBoxIcon.Warning);

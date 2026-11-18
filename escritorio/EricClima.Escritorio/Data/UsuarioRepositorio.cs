@@ -15,7 +15,6 @@ namespace EricClima.Escritorio.Data
             return dr.Read() ? Mapear(dr) : null;
         }
 
-        /// <summary>Usuarios activos que pueden recibir trabajos.</summary>
         public List<Usuario> ListarActivos()
         {
             using var cn = Conexion.Abrir();

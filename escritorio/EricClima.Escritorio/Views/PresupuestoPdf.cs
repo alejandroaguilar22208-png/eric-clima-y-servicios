@@ -6,10 +6,6 @@ using QuestPDF.Infrastructure;
 
 namespace EricClima.Escritorio.Views
 {
-    /// <summary>
-    /// Arma el PDF del presupuesto con la librería QuestPDF.
-    /// Es parte de la VISTA: solo dibuja los datos que recibe.
-    /// </summary>
     public static class PresupuestoPdf
     {
         private const string Empresa = "Eric Clima y Servicios";
@@ -22,7 +18,7 @@ namespace EricClima.Escritorio.Views
 
         public static void Generar(Presupuesto p, string ruta)
         {
-            QuestPDF.Settings.License = LicenseType.Community; // licencia gratuita para uso educativo/pequeño
+            QuestPDF.Settings.License = LicenseType.Community;
 
             Document.Create(doc => doc.Page(page =>
             {
@@ -30,7 +26,6 @@ namespace EricClima.Escritorio.Views
                 page.Margin(40);
                 page.DefaultTextStyle(t => t.FontSize(10));
 
-                // ---------- Encabezado ----------
                 page.Header().Row(row =>
                 {
                     row.RelativeItem().Column(col =>
@@ -48,7 +43,6 @@ namespace EricClima.Escritorio.Views
                     });
                 });
 
-                // ---------- Contenido ----------
                 page.Content().PaddingVertical(20).Column(col =>
                 {
                     col.Spacing(12);
@@ -65,10 +59,10 @@ namespace EricClima.Escritorio.Views
                     {
                         tabla.ColumnsDefinition(c =>
                         {
-                            c.RelativeColumn(5);  // descripción
-                            c.RelativeColumn(1.3f); // cantidad
-                            c.RelativeColumn(2);  // precio
-                            c.RelativeColumn(2);  // subtotal
+                            c.RelativeColumn(5);
+                            c.RelativeColumn(1.3f);
+                            c.RelativeColumn(2);
+                            c.RelativeColumn(2);
                         });
 
                         tabla.Header(h =>
@@ -99,7 +93,6 @@ namespace EricClima.Escritorio.Views
                     });
                 });
 
-                // ---------- Pie con número de página ----------
                 page.Footer().AlignCenter().Text(t =>
                 {
                     t.Span($"{Empresa} — Página ");

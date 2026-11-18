@@ -4,7 +4,6 @@ using EricClima.Escritorio.Models;
 
 namespace EricClima.Escritorio.Views
 {
-    /// <summary>Lista de presupuestos: crear, aceptar/rechazar y exportar a PDF.</summary>
     public class FrmPresupuestos : Form
     {
         private readonly PresupuestoController controller = new PresupuestoController();
@@ -46,7 +45,6 @@ namespace EricClima.Escritorio.Views
             catch (Exception ex) { Ui.Aviso("No se pudieron cargar los presupuestos: " + ex.Message); }
         }
 
-        /// <summary>Verde = aceptado, gris = rechazado o vencido.</summary>
         private void Pintar()
         {
             for (int i = 0; i < grilla.Rows.Count; i++)
@@ -79,7 +77,6 @@ namespace EricClima.Escritorio.Views
             if (p != null) GuardarPdf(p);
         }
 
-        /// <summary>Pregunta dónde guardar, genera el PDF y lo abre.</summary>
         private void GuardarPdf(Presupuesto p)
         {
             using var dlg = new SaveFileDialog
@@ -103,7 +100,6 @@ namespace EricClima.Escritorio.Views
         }
     }
 
-    /// <summary>Carga de un presupuesto nuevo con sus ítems.</summary>
     public class FrmPresupuestoNuevo : Form
     {
         private readonly PresupuestoController controller = new PresupuestoController();
@@ -125,7 +121,6 @@ namespace EricClima.Escritorio.Views
 
             cboCliente.Items.AddRange(new ClienteController().Buscar("").ToArray());
 
-            // Atajo: elegir un servicio o material agrega un renglón con su precio
             cboAgregar.Items.Add("— Agregar servicio o material —");
             foreach (Servicio s in new TrabajoController().Servicios()) cboAgregar.Items.Add(s);
             foreach (Material m in new StockController().Listar()) cboAgregar.Items.Add(m);
@@ -173,7 +168,6 @@ namespace EricClima.Escritorio.Views
             Recalcular();
         }
 
-        /// <summary>Lee la tabla y arma la lista de ítems (los renglones vacíos se ignoran).</summary>
         private List<PresupuestoItem> LeerItems(out string error)
         {
             error = "";

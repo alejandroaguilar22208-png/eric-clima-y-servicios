@@ -3,10 +3,6 @@ using EricClima.Escritorio.Models;
 
 namespace EricClima.Escritorio.Views
 {
-    /// <summary>
-    /// Trabajos: crear, agendar, cargar materiales y cerrar.
-    /// Ciclo de estados: Pendiente → Agendado → Realizado (o Cancelado).
-    /// </summary>
     public class FrmTrabajos : Form
     {
         private readonly TrabajoController controller = new TrabajoController();
@@ -59,7 +55,6 @@ namespace EricClima.Escritorio.Views
             catch (Exception ex) { Ui.Aviso("No se pudieron cargar los trabajos: " + ex.Message); }
         }
 
-        /// <summary>Verde = realizado, gris = cancelado.</summary>
         private void Pintar()
         {
             for (int i = 0; i < grilla.Rows.Count; i++)
@@ -138,7 +133,6 @@ namespace EricClima.Escritorio.Views
 
             cboCliente.Items.AddRange(new ClienteController().Buscar("").ToArray());
             cboServicio.Items.AddRange(controller.Servicios().ToArray());
-            // Al elegir el servicio, se sugiere su precio base
             cboServicio.SelectedIndexChanged += (s, e) =>
             {
                 if (cboServicio.SelectedItem is Servicio sv) numTotal.Value = sv.PrecioBase;

@@ -3,14 +3,12 @@ using MySqlConnector;
 
 namespace EricClima.Escritorio.Data
 {
-    /// <summary>Todo el SQL de la tabla clientes está acá y en ningún otro lado.</summary>
     public class ClienteRepositorio : IRepositorio<Cliente>
     {
         private const string Columnas = "id, nombre, telefono, email, direccion, localidad, activo";
 
         public List<Cliente> Listar() => Buscar("");
 
-        /// <summary>Busca clientes activos por nombre, teléfono o dirección.</summary>
         public List<Cliente> Buscar(string texto)
         {
             using var cn = Conexion.Abrir();
@@ -18,7 +16,6 @@ namespace EricClima.Escritorio.Data
                 $"SELECT {Columnas} FROM clientes " +
                 "WHERE activo = 1 AND (nombre LIKE @t OR telefono LIKE @t OR direccion LIKE @t) " +
                 "ORDER BY nombre", cn);
-            // Parámetro (@t) en vez de concatenar texto: evita inyección SQL
             cmd.Parameters.AddWithValue("@t", "%" + texto + "%");
 
             var lista = new List<Cliente>();
@@ -58,7 +55,6 @@ namespace EricClima.Escritorio.Data
             cmd.ExecuteNonQuery();
         }
 
-        /// <summary>RN-08: los clientes no se borran, se desactivan.</summary>
         public void Desactivar(int id)
         {
             using var cn = Conexion.Abrir();
@@ -76,7 +72,6 @@ namespace EricClima.Escritorio.Data
             cmd.Parameters.AddWithValue("@localidad", c.Localidad.Trim());
         }
 
-        /// <summary>Convierte una fila de la base en un objeto Cliente.</summary>
         private static Cliente Mapear(MySqlDataReader dr) => new Cliente
         {
             Id = dr.GetInt32("id"),

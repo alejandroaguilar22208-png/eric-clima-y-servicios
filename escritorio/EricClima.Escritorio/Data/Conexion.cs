@@ -4,8 +4,20 @@ namespace EricClima.Escritorio.Data
 {
     public static class Conexion
     {
-        private const string Cadena =
+        private const string CadenaPorDefecto =
             "Server=localhost;Port=3306;Database=climagestion;User ID=root;Password=;CharSet=utf8mb4;";
+
+        public static string Cadena { get; } = LeerCadena();
+
+        private static string LeerCadena()
+        {
+            string archivo = Path.Combine(AppContext.BaseDirectory, "conexion.txt");
+            if (!File.Exists(archivo)) return CadenaPorDefecto;
+            string linea = File.ReadAllLines(archivo)
+                .Select(l => l.Trim())
+                .FirstOrDefault(l => l != "" && !l.StartsWith("#"));
+            return string.IsNullOrEmpty(linea) ? CadenaPorDefecto : linea;
+        }
 
         public static MySqlConnection Abrir()
         {

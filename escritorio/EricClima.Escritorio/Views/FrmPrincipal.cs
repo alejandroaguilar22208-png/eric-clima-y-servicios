@@ -7,13 +7,14 @@ namespace EricClima.Escritorio.Views
     {
         private readonly StockController stock = new StockController();
         private readonly TrabajoController trabajos = new TrabajoController();
-        private readonly ClienteController clientes = new ClienteController();
+        private readonly SolicitudController solicitudes = new SolicitudController();
+        private readonly System.Windows.Forms.Timer actualizar = new System.Windows.Forms.Timer { Interval = 30000 };
         private readonly ListBox lstAlertas = new ListBox
         {
             Dock = DockStyle.Fill, BorderStyle = BorderStyle.None, DrawMode = DrawMode.OwnerDrawFixed,
             ItemHeight = 38, IntegralHeight = false
         };
-        private readonly Label lblClientes = Numero();
+        private readonly Label lblSolicitudes = Numero();
         private readonly Label lblHoy = Numero();
         private readonly Label lblSinAgendar = Numero();
         private readonly Label lblStock = Numero();
@@ -34,11 +35,13 @@ namespace EricClima.Escritorio.Views
                 FlowDirection = FlowDirection.TopDown, WrapContents = false, Padding = new Padding(0, 12, 0, 12)
             };
             menu.Controls.Add(Logo());
+            menu.Controls.Add(ItemMenu("", "Solicitudes web", () => Abrir(new FrmSolicitudes())));
             menu.Controls.Add(ItemMenu("", "Clientes", () => Abrir(new FrmClientes())));
             menu.Controls.Add(ItemMenu("", "Trabajos", () => Abrir(new FrmTrabajos())));
             menu.Controls.Add(ItemMenu("", "Stock", () => Abrir(new FrmMateriales())));
             menu.Controls.Add(ItemMenu("", "Presupuestos", () => Abrir(new FrmPresupuestos())));
-            menu.Controls.Add(new Panel { Width = 196, Height = 1, BackColor = Color.FromArgb(40, 70, 105), Margin = new Padding(12, 14, 12, 14) });
+            menu.Controls.Add(ItemMenu("", "Equipos en venta", () => Abrir(new FrmEquiposVenta())));
+            menu.Controls.Add(new Panel { Width = 196, Height = 1, BackColor = Color.FromArgb(40, 70, 105), Margin = new Padding(12, 8, 12, 8) });
             menu.Controls.Add(ItemMenu("", "Ayuda (F1)", AbrirAyuda));
             menu.Controls.Add(ItemMenu("", "Salir", Close));
 
@@ -57,7 +60,7 @@ namespace EricClima.Escritorio.Views
 
             var tarjetas = new TableLayoutPanel { Dock = DockStyle.Top, Height = 130, ColumnCount = 4, Padding = new Padding(18, 18, 18, 6) };
             for (int i = 0; i < 4; i++) tarjetas.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
-            tarjetas.Controls.Add(Tarjeta("", "Clientes", lblClientes, Ui.Azul), 0, 0);
+            tarjetas.Controls.Add(Tarjeta("", "Solicitudes", lblSolicitudes, Ui.Azul), 0, 0);
             tarjetas.Controls.Add(Tarjeta("", "Para hoy", lblHoy, Verde), 1, 0);
             tarjetas.Controls.Add(Tarjeta("", "Sin agendar", lblSinAgendar, Ui.Naranja), 2, 0);
             tarjetas.Controls.Add(Tarjeta("", "Stock bajo", lblStock, RojoFuerte), 3, 0);
@@ -80,6 +83,9 @@ namespace EricClima.Escritorio.Views
             Controls.Add(menu);
 
             Activated += (s, e) => CargarDatos();
+            actualizar.Tick += (s, e) => CargarDatos();
+            Load += (s, e) => actualizar.Start();
+            FormClosed += (s, e) => actualizar.Dispose();
             KeyDown += (s, e) => { if (e.KeyCode == Keys.F1) AbrirAyuda(); };
         }
 
@@ -169,6 +175,7 @@ namespace EricClima.Escritorio.Views
             Color color = texto.StartsWith("Stock") ? RojoFuerte
                         : texto.StartsWith("Hoy") ? Verde
                         : texto.StartsWith("Sin agendar") ? Ui.Naranja
+                        : texto.StartsWith("Solicitud") ? Color.FromArgb(124, 58, 237)
                         : Ui.Azul;
             var fondo = e.Index % 2 == 0 ? Color.White : Color.FromArgb(248, 251, 254);
             using (var b = new SolidBrush(fondo)) e.Graphics.FillRectangle(b, e.Bounds);
@@ -195,10 +202,14 @@ namespace EricClima.Escritorio.Views
                 List<Trabajo> pendientes = trabajos.Listar(EstadoTrabajo.Pendiente);
                 List<Trabajo> hoy = agendados.Where(t => t.FechaAgendada?.Date == DateTime.Today).ToList();
 
-                lblClientes.Text = clientes.Buscar("").Count.ToString();
+                List<Solicitud> nuevas = solicitudes.Listar().Where(x => x.Estado == EstadoSolicitud.Pendiente).ToList();
+                lblSolicitudes.Text = nuevas.Count.ToString();
                 lblHoy.Text = hoy.Count.ToString();
                 lblSinAgendar.Text = pendientes.Count.ToString();
                 lblStock.Text = bajos.Count.ToString();
+
+                foreach (Solicitud x in nuevas)
+                    lstAlertas.Items.Add($"Solicitud web: {x.Nombre} ({x.Telefono}) — {x.ServicioNombre}");
 
                 foreach (Material m in bajos)
                     lstAlertas.Items.Add($"Stock bajo: {m.Nombre} — quedan {m.StockActual} {m.Unidad} (mínimo {m.StockMinimo})");

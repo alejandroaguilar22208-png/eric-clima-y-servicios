@@ -4,6 +4,10 @@
 
     public enum EstadoTrabajo { Pendiente, Agendado, Realizado, Cancelado }
 
+    public enum TipoEquipoVenta { Split, Ventana, Portatil, PisoTecho }
+
+    public enum EstadoSolicitud { Pendiente, Contactado, Convertida, Descartada }
+
     public abstract class Persona
     {
         public int Id { get; set; }
@@ -134,5 +138,57 @@
             }
             return "";
         }
+    }
+
+    public class EquipoVenta
+    {
+        public int Id { get; set; }
+        public string Marca { get; set; } = "";
+        public string Modelo { get; set; } = "";
+        public TipoEquipoVenta Tipo { get; set; } = TipoEquipoVenta.Split;
+        public int Frigorias { get; set; }
+        public bool FrioCalor { get; set; } = true;
+        public bool Inverter { get; set; }
+        public decimal Precio { get; set; }
+        public int Stock { get; set; }
+        public string Descripcion { get; set; } = "";
+        public bool Activo { get; set; } = true;
+
+        public bool Disponible() => Stock > 0;
+
+        public string Validar()
+        {
+            if (string.IsNullOrWhiteSpace(Marca)) return "La marca es obligatoria.";
+            if (string.IsNullOrWhiteSpace(Modelo)) return "El modelo es obligatorio.";
+            if (Frigorias <= 0) return "Las frigorías tienen que ser mayores a 0.";
+            if (Precio <= 0) return "El precio tiene que ser mayor a 0.";
+            if (Stock < 0) return "El stock no puede ser negativo.";
+            return "";
+        }
+
+        public static string TipoTexto(TipoEquipoVenta t) => t switch
+        {
+            TipoEquipoVenta.Portatil => "Portátil",
+            TipoEquipoVenta.PisoTecho => "Piso-techo",
+            _ => t.ToString()
+        };
+
+        public override string ToString() => $"{Marca} {Modelo} ({Frigorias} frigorías)";
+    }
+
+    public class Solicitud
+    {
+        public int Id { get; set; }
+        public int? ClienteId { get; set; }
+        public string Nombre { get; set; } = "";
+        public string Telefono { get; set; } = "";
+        public string Direccion { get; set; } = "";
+        public int? ServicioId { get; set; }
+        public string ServicioNombre { get; set; } = "";
+        public string Mensaje { get; set; } = "";
+        public DateTime Fecha { get; set; }
+        public EstadoSolicitud Estado { get; set; } = EstadoSolicitud.Pendiente;
+
+        public bool EstaCerrada() => Estado == EstadoSolicitud.Convertida || Estado == EstadoSolicitud.Descartada;
     }
 }

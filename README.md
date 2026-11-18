@@ -19,13 +19,22 @@ El sistema tiene dos partes que comparten **una misma base de datos MySQL/MariaD
 3. **Web:** copiar `web/` a `C:\xampp\htdocs\ericclima` y abrir `http://localhost/ericclima/`.
 4. **Escritorio:** abrir `escritorio/EricClima.slnx` con Visual Studio y ejecutar con F5.
 
+### Instalar el programa de escritorio en otra computadora
+
+Funciona en cualquier notebook o PC de escritorio con Windows 10 u 11 de 64 bits, sin instalar .NET ni Visual Studio.
+
+1. En la carpeta `escritorio/instalador/`, hacer doble clic en `crear-instalador.bat` (necesita .NET SDK e Inno Setup 6).
+2. Se genera `escritorio/instalador/salida/Instalar-ClimaGestion.exe`: copiarlo a la otra computadora (pendrive, Drive) e instalarlo.
+3. Esa computadora necesita la base: XAMPP con `climagestion.sql` importado, o apuntar a la base de otra PC de la red desde **Inicio → ClimaGestión → Configurar conexión a la base** (archivo `conexion.txt`).
+
 El usuario de prueba está en `escritorio/GUIA.md`. Más detalles en `web/GUIA-WEB.md` y `escritorio/GUIA.md`.
 
 ## Funcionalidades
 
 - Login con contraseñas cifradas (bcrypt) y roles (administrador / técnico).
 - Clientes y equipos instalados, con historial de trabajos.
-- Solicitudes desde la web que se convierten en cliente + trabajo.
+- Solicitudes desde la web que llegan solas al escritorio y se convierten en cliente + trabajo.
+- Equipos en venta: se cargan desde el escritorio o el panel y se muestran en la página con una calculadora de frigorías.
 - Trabajos con estados: pendiente → agendado → realizado / cancelado.
 - Materiales usados por trabajo, con descuento automático de stock y alertas de stock bajo.
 - Presupuestos con ítems, vencimiento automático a 15 días y exportación a PDF.
@@ -38,6 +47,8 @@ El usuario de prueba está en `escritorio/GUIA.md`. Más detalles en `web/GUIA-W
 | Archivo | Qué es |
 | --- | --- |
 | `docs/Documentacion-Escritorio.pdf` | Documentación completa del sistema de escritorio (PDF único, con índice vinculado). |
+| `docs/Documentacion-Escritorio.docx` | La misma documentación en Word, para editarla. |
+| `escritorio/instalador/` | Script del instalador (Inno Setup) y el LEEME que se instala con el programa. |
 | `escritorio/EricClima.Escritorio/Manual.pdf` | Manual de usuario con capturas; se abre desde el programa con F1. |
 | `docs/diagramas/*.drawio` | MER, modelo relacional y diagrama de clases (abrir con draw.io / diagrams.net). |
 | `docs/capturas/` | Capturas de pantalla del sistema. |

@@ -10,3 +10,6 @@ web/uploads/*
 *.exe
 asistencia_escritorio/
 
+
+escritorio/instalador/publicado/
+escritorio/instalador/salida/

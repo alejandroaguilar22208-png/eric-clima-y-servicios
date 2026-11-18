@@ -129,6 +129,20 @@ escritorio/
 database/climagestion.sql               ← la base completa con datos de prueba
 ```
 
+## 7 bis. Escritorio y web conectados
+
+- **¿Cómo se comunican el escritorio y la web?** No se mandan nada entre ellos: los dos leen y escriben **la misma base** `climagestion`. Por eso lo que se carga en uno aparece en el otro.
+- **Solicitudes web** (`FrmSolicitudes`, `SolicitudController`, `SolicitudRepositorio`): los pedidos del formulario de la página llegan solos; la ventana y el menú principal se refrescan cada 30 segundos con un `Timer`. *Convertir* crea el cliente y el trabajo dentro de una **transacción** (si algo falla, no queda nada a medias).
+- **Equipos en venta** (`FrmEquiposVenta`, `EquipoVentaController`, `EquipoVentaRepositorio`, modelo `EquipoVenta` con `Validar()`): lo que se carga acá se ve al instante en la sección *Equipos en venta* de la web. Solo el administrador modifica.
+
+## 8 bis. Instalarlo en otra computadora
+
+- **¿Funciona en una notebook?** Sí. Es una aplicación de escritorio de Windows: corre igual en una notebook que en una PC de escritorio, con Windows 10 u 11 de 64 bits.
+- **¿Hay que instalar .NET?** No. El instalador lleva el programa *autocontenido* (`--self-contained`): trae .NET adentro.
+- **¿Cómo se arma el instalador?** Con `escritorio/instalador/crear-instalador.bat`: hace `dotnet publish` y después compila `ClimaGestion.iss` con Inno Setup. Sale `Instalar-ClimaGestion.exe`.
+- **¿Qué instala?** El programa, el manual, el script de la base y accesos directos en el menú Inicio y, si se elige, en el escritorio. Se desinstala desde Configuración de Windows.
+- **¿Y la base de datos?** Puede estar en la misma computadora (XAMPP) o en otra de la red. La cadena de conexión se lee del archivo `conexion.txt` que está al lado del programa (`Conexion.LeerCadena()`), así no hay que recompilar para cambiar de servidor.
+
 ## 9. Lo que falta (si te da el tiempo)
 
 - [x] Presupuestos con PDF.

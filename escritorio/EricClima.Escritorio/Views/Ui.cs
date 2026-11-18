@@ -16,6 +16,13 @@ namespace EricClima.Escritorio.Views
         public static readonly Color Verde = Color.FromArgb(226, 245, 230);
         public static readonly Color Gris = Color.FromArgb(235, 235, 235);
         public static readonly Font Fuente = new Font("Segoe UI", 10F);
+        private static readonly Icon Icono = CargarIcono();
+
+        private static Icon CargarIcono()
+        {
+            try { return Icon.ExtractAssociatedIcon(Application.ExecutablePath); }
+            catch { return null; }
+        }
         public static readonly Font FuenteNegrita = new Font("Segoe UI Semibold", 10F);
 
         public static void Preparar(Form f, string titulo, int ancho, int alto, bool encabezado = true)
@@ -26,6 +33,7 @@ namespace EricClima.Escritorio.Views
             f.ClientSize = new Size(ancho, alto + (encabezado ? 58 : 0));
             f.BackColor = Color.White;
             f.KeyPreview = true;
+            if (Icono != null) f.Icon = Icono;
             if (encabezado)
             {
                 var cabecera = Encabezado(titulo);

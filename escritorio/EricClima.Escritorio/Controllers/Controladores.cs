@@ -202,4 +202,67 @@ namespace EricClima.Escritorio.Controllers
             catch (Exception ex) { return Resultado.Error("No se pudo crear el PDF: " + ex.Message); }
         }
     }
+
+    public class EquipoVentaController
+    {
+        private readonly EquipoVentaRepositorio repo = new EquipoVentaRepositorio();
+
+        public List<EquipoVenta> Listar() => repo.Listar();
+
+        public Resultado Guardar(EquipoVenta e)
+        {
+            if (!Sesion.EsAdmin) return Resultado.Error("Solo el administrador puede modificar los equipos en venta.");
+            string error = e.Validar();
+            if (error != "") return Resultado.Error(error);
+            try
+            {
+                if (e.Id == 0) { repo.Insertar(e); return Resultado.Bien("Equipo agregado. Ya se ve en la página web."); }
+                repo.Actualizar(e);
+                return Resultado.Bien("Equipo modificado. La página web ya muestra los cambios.");
+            }
+            catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
+
+        public Resultado CambiarVisibilidad(EquipoVenta e)
+        {
+            if (!Sesion.EsAdmin) return Resultado.Error("Solo el administrador puede modificar los equipos en venta.");
+            try
+            {
+                e.Activo = !e.Activo;
+                repo.Actualizar(e);
+                return Resultado.Bien(e.Activo ? "El equipo se volvió a mostrar en la web." : "El equipo quedó oculto en la web.");
+            }
+            catch (Exception ex) { e.Activo = !e.Activo; return Resultado.DesdeExcepcion(ex); }
+        }
+    }
+
+    public class SolicitudController
+    {
+        private readonly SolicitudRepositorio repo = new SolicitudRepositorio();
+
+        public List<Solicitud> Listar() => repo.Listar();
+        public int Pendientes() => repo.ContarPendientes();
+
+        public Resultado MarcarContactado(Solicitud s) => Cambiar(s, EstadoSolicitud.Contactado, "Solicitud marcada como contactada.");
+        public Resultado Descartar(Solicitud s) => Cambiar(s, EstadoSolicitud.Descartada, "Solicitud descartada.");
+
+        private Resultado Cambiar(Solicitud s, EstadoSolicitud estado, string mensaje)
+        {
+            if (s.EstaCerrada()) return Resultado.Error("Esa solicitud ya está cerrada.");
+            try { repo.CambiarEstado(s.Id, estado); return Resultado.Bien(mensaje); }
+            catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
+
+        public Resultado Convertir(Solicitud s)
+        {
+            if (s.Estado == EstadoSolicitud.Convertida) return Resultado.Error("Esa solicitud ya fue convertida.");
+            try
+            {
+                repo.Convertir(s);
+                return Resultado.Bien("Se creó el cliente y un trabajo pendiente. Ahora agendalo en Trabajos.");
+            }
+            catch (InvalidOperationException ex) { return Resultado.Error(ex.Message); }
+            catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
+    }
 }

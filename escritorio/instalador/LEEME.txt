@@ -1,0 +1,24 @@
+﻿ClimaGestión - Eric Clima y Servicios
+=====================================
+
+Funciona en cualquier computadora con Windows 10 u 11 de 64 bits, sea notebook o de escritorio.
+No hace falta instalar .NET ni Visual Studio: el programa ya los trae adentro.
+
+ANTES DE USARLO: la base de datos
+---------------------------------
+El programa guarda todo en una base de datos MariaDB / MySQL. Hay dos formas de usarla:
+
+1) La base en esta misma computadora
+   - Instalar XAMPP (https://www.apachefriends.org) y encender "MySQL" en su panel.
+   - Abrir phpMyAdmin (http://localhost/phpmyadmin), ir a "Importar" y elegir el archivo
+     "base de datos\climagestion.sql" que está en la carpeta donde se instaló el programa.
+   - Listo: no hay que cambiar nada más.
+
+2) La base en otra computadora de la red (por ejemplo, la del negocio)
+   - En el menú Inicio, abrir "ClimaGestión > Configurar conexión a la base".
+   - Cambiar "localhost" por la IP de la computadora que tiene la base (por ejemplo 192.168.0.10).
+   - Guardar y volver a abrir el programa.
+
+AYUDA
+-----
+Dentro del programa, apretar F1 o el botón "Ayuda" para abrir el manual de usuario.

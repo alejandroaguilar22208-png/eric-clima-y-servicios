@@ -1,0 +1,4 @@
+# Datos de conexión a la base de datos de ClimaGestión.
+# Si la base está en esta misma computadora, dejalo como está.
+# Si está en otra computadora de la red, cambiá "localhost" por la IP de esa computadora (por ejemplo 192.168.0.10).
+Server=localhost;Port=3306;Database=climagestion;User ID=root;Password=;CharSet=utf8mb4;

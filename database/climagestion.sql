@@ -11,6 +11,8 @@
 --  y BCrypt.Net.BCrypt.Verify() en C#.
 -- =====================================================================
 
+SET NAMES utf8mb4; -- el archivo está en UTF-8 (evita acentos rotos al importar)
+
 DROP DATABASE IF EXISTS climagestion;
 CREATE DATABASE climagestion CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE climagestion;

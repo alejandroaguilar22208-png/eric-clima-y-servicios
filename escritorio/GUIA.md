@@ -108,6 +108,7 @@ Están en **dos lugares**: en el controlador (C#), que avisa lindo, y en la base
 - **¿Qué es una clave foránea?** Un campo que apunta a otra tabla. `trabajos.cliente_id` apunta a `clientes.id` y no deja crear un trabajo para un cliente que no existe.
 - **¿Por qué `trabajo_material` es una tabla aparte?** Porque un trabajo usa muchos materiales y un material se usa en muchos trabajos (N a N). Eso lo pide la normalización (1FN).
 - **¿Qué pasa si se cae la base?** El controlador atrapa el error (`try/catch`) y muestra un mensaje en vez de cerrarse.
+- **¿Dónde está el manual?** Adentro del sistema: **F1** o el botón **Ayuda**. Es `Manual.pdf`; no es lineal: el índice y los recuadros "Ver también" son vínculos para saltar al tema. Las capturas están también en `docs/capturas/`.
 - **¿Cómo hacés el PDF?** Con la librería **QuestPDF** (NuGet, licencia Community gratuita). Está en `Views/PresupuestoPdf.cs`: arma encabezado, tabla de ítems, total y pie con número de página.
 - **¿Qué es una transacción?** Al guardar un presupuesto se insertan el encabezado y los ítems. Si falla uno, `Rollback()` deshace todo para que no quede un presupuesto a medias.
 - **¿Cómo se conecta con la web?** Las dos usan la misma base `climagestion`. Lo que entra por el formulario web queda en `solicitudes`.
@@ -133,4 +134,4 @@ database/climagestion.sql               ← la base completa con datos de prueba
 - [x] Presupuestos con PDF.
 - [ ] Pantalla de proveedores.
 - [ ] Bandeja de solicitudes que llegan de la web.
-- [ ] `Manual.pdf` al lado del .exe (el botón Ayuda ya lo abre).
+- [x] `Manual.pdf` (15 páginas, con capturas, índice con vínculos y "Ver también"). Se copia solo al lado del .exe y se abre con **F1** o el botón Ayuda.

@@ -1,8 +1,5 @@
 <?php
-/**
- * Sitio público de Eric Clima y Servicios.
- * Los servicios y la galería se leen de la base (sitio dinámico).
- */
+
 require_once __DIR__ . '/../app/config.php';
 
 try {
@@ -13,7 +10,6 @@ try {
     $fotos = [];
 }
 
-// Datos del formulario si volvió con error (para no hacerle escribir todo de nuevo)
 $viejo  = $_SESSION['form_viejo'] ?? [];
 $errorF = $_SESSION['form_error'] ?? '';
 unset($_SESSION['form_viejo'], $_SESSION['form_error']);
@@ -33,7 +29,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
 </head>
 <body>
 
-<!-- Menú -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-marca sticky-top">
     <div class="container">
         <a class="navbar-brand fw-bold" href="#inicio"><?= e(EMPRESA) ?></a>
@@ -52,7 +47,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
     </div>
 </nav>
 
-<!-- Portada -->
 <header class="hero" id="inicio">
     <div class="container">
         <div class="row align-items-center">
@@ -74,7 +68,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
     </div>
 </header>
 
-<!-- Servicios (desde la base de datos) -->
 <section class="seccion" id="servicios">
     <div class="container">
         <h2 class="text-center fw-bold mb-2">Servicios</h2>
@@ -100,7 +93,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
     </div>
 </section>
 
-<!-- Cómo trabajamos -->
 <section class="seccion seccion-alt" id="como-trabajamos">
     <div class="container">
         <h2 class="text-center fw-bold mb-5">Cómo trabajamos</h2>
@@ -123,7 +115,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
     </div>
 </section>
 
-<!-- Galería (desde la base de datos) -->
 <section class="seccion" id="trabajos">
     <div class="container">
         <h2 class="text-center fw-bold mb-5">Trabajos realizados</h2>
@@ -143,7 +134,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
     </div>
 </section>
 
-<!-- Preguntas frecuentes -->
 <section class="seccion seccion-alt" id="preguntas">
     <div class="container" style="max-width: 820px">
         <h2 class="text-center fw-bold mb-5">Preguntas frecuentes</h2>
@@ -170,7 +160,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
     </div>
 </section>
 
-<!-- Contacto y formulario de solicitud -->
 <section class="seccion" id="contacto">
     <div class="container">
         <div class="row g-5">
@@ -194,7 +183,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
                 <?php endif; ?>
                 <form method="post" action="solicitud.php" class="card card-body shadow-sm" novalidate>
                     <?= csrf_campo() ?>
-                    <!-- Campo trampa: las personas no lo ven, los robots de spam lo completan -->
                     <input type="text" name="sitio_web" class="d-none" tabindex="-1" autocomplete="off">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -243,7 +231,6 @@ $mensajeWa = rawurlencode('Hola ' . EMPRESA . ', quiero consultar por un aire ac
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Validación en el navegador antes de enviar (la del servidor está igual en solicitud.php)
 document.querySelector('form[action="solicitud.php"]').addEventListener('submit', function (ev) {
     const nombre = this.nombre.value.trim();
     const tel = this.telefono.value.trim();

@@ -6,7 +6,6 @@ if (usuario_actual()) redirigir('index.php');
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verificar();
-    // Mismo mensaje si falla el email o la clave: no le damos pistas a un intruso
     if (iniciar_sesion($_POST['email'] ?? '', $_POST['clave'] ?? '')) redirigir('index.php');
     $error = 'Usuario o contraseña incorrectos.';
 }

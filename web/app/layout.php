@@ -1,8 +1,4 @@
 <?php
-/**
- * Plantilla del panel de gestión: encabezado con menú y pie.
- * Uso: layout_inicio('Clientes', 'clientes'); ... layout_fin();
- */
 
 function layout_inicio(string $titulo, string $activo = ''): void
 {
@@ -63,7 +59,6 @@ function layout_fin(): void
 <?php
 }
 
-/** Etiqueta de color para cada estado de trabajo. */
 function badge_estado(string $estado): string
 {
     $colores = ['pendiente' => 'warning', 'agendado' => 'primary', 'realizado' => 'success', 'cancelado' => 'secondary',

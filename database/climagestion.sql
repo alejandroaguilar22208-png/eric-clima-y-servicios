@@ -1,25 +1,9 @@
--- =====================================================================
---  ClimaGestión - Base de datos
---  Sistema de gestión para servicio técnico de climatización
---  Motor: MySQL 8 / MariaDB 10.4+ (XAMPP)   Cotejamiento: utf8mb4
---  Compartida por: Web (PHP), Escritorio (C#) y Móvil
---
---  Usuario de prueba (solo desarrollo, cambiar en producción):
---    email:      admin@climagestion.test
---    contraseña: Clima2026!
---  El hash es bcrypt ($2y$): lo valida password_verify() en PHP
---  y BCrypt.Net.BCrypt.Verify() en C#.
--- =====================================================================
-
-SET NAMES utf8mb4; -- el archivo está en UTF-8 (evita acentos rotos al importar)
+SET NAMES utf8mb4;
 
 DROP DATABASE IF EXISTS climagestion;
 CREATE DATABASE climagestion CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE climagestion;
 
--- ---------------------------------------------------------------------
--- USUARIOS: quienes ingresan al sistema (RN-09, RN-10)
--- ---------------------------------------------------------------------
 CREATE TABLE usuarios (
     id             INT AUTO_INCREMENT PRIMARY KEY,
     nombre         VARCHAR(100) NOT NULL,
@@ -30,9 +14,6 @@ CREATE TABLE usuarios (
     fecha_alta     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- CLIENTES (RN-08: no se borran si tienen trabajos, se desactivan)
--- ---------------------------------------------------------------------
 CREATE TABLE clientes (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     nombre      VARCHAR(120) NOT NULL,
@@ -46,9 +27,6 @@ CREATE TABLE clientes (
     INDEX idx_clientes_telefono (telefono)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- EQUIPOS instalados en cada cliente
--- ---------------------------------------------------------------------
 CREATE TABLE equipos (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id  INT NOT NULL,
@@ -56,14 +34,11 @@ CREATE TABLE equipos (
     modelo      VARCHAR(60) NULL,
     frigorias   INT NOT NULL,
     tipo        ENUM('split','ventana','portatil','piso_techo','central') NOT NULL DEFAULT 'split',
-    ubicacion   VARCHAR(80) NULL COMMENT 'Ej: dormitorio, living',
+    ubicacion   VARCHAR(80) NULL,
     CONSTRAINT fk_equipos_cliente FOREIGN KEY (cliente_id) REFERENCES clientes(id)
         ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- SERVICIOS que ofrece el negocio (se muestran en la web pública)
--- ---------------------------------------------------------------------
 CREATE TABLE servicios (
     id           INT AUTO_INCREMENT PRIMARY KEY,
     nombre       VARCHAR(80) NOT NULL UNIQUE,
@@ -72,10 +47,6 @@ CREATE TABLE servicios (
     activo       TINYINT(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- SOLICITUDES que llegan desde el formulario de la web
--- cliente_id se completa cuando la solicitud se convierte en cliente
--- ---------------------------------------------------------------------
 CREATE TABLE solicitudes (
     id           INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id   INT NULL,
@@ -90,9 +61,6 @@ CREATE TABLE solicitudes (
     CONSTRAINT fk_solicitudes_servicio FOREIGN KEY (servicio_id) REFERENCES servicios(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- TRABAJOS (RN-01, RN-03, RN-04, RN-05, RN-07)
--- ---------------------------------------------------------------------
 CREATE TABLE trabajos (
     id               INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id       INT NOT NULL,
@@ -109,25 +77,20 @@ CREATE TABLE trabajos (
     CONSTRAINT fk_trabajos_equipo   FOREIGN KEY (equipo_id)   REFERENCES equipos(id)   ON DELETE SET NULL,
     CONSTRAINT fk_trabajos_servicio FOREIGN KEY (servicio_id) REFERENCES servicios(id) ON DELETE RESTRICT,
     CONSTRAINT fk_trabajos_tecnico  FOREIGN KEY (tecnico_id)  REFERENCES usuarios(id)  ON DELETE SET NULL,
-    -- RN-07: un técnico no puede tener dos trabajos en la misma fecha y hora
     UNIQUE KEY uq_tecnico_horario (tecnico_id, fecha_agendada),
     INDEX idx_trabajos_estado (estado)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- MATERIALES y stock (RN-02, RN-11)
--- ---------------------------------------------------------------------
 CREATE TABLE materiales (
     id            INT AUTO_INCREMENT PRIMARY KEY,
     nombre        VARCHAR(100) NOT NULL UNIQUE,
-    unidad        VARCHAR(20) NOT NULL COMMENT 'm, kg, unidad',
+    unidad        VARCHAR(20) NOT NULL,
     stock_actual  DECIMAL(10,2) NOT NULL DEFAULT 0,
     stock_minimo  DECIMAL(10,2) NOT NULL DEFAULT 0,
     precio        DECIMAL(12,2) NOT NULL DEFAULT 0,
     CONSTRAINT chk_stock_no_negativo CHECK (stock_actual >= 0)
 ) ENGINE=InnoDB;
 
--- Materiales usados en cada trabajo (relación N a N)
 CREATE TABLE trabajo_material (
     trabajo_id   INT NOT NULL,
     material_id  INT NOT NULL,
@@ -138,9 +101,6 @@ CREATE TABLE trabajo_material (
     CONSTRAINT chk_tm_cantidad CHECK (cantidad > 0)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- PROVEEDORES de materiales (relación N a N con materiales)
--- ---------------------------------------------------------------------
 CREATE TABLE proveedores (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     nombre     VARCHAR(120) NOT NULL,
@@ -159,14 +119,11 @@ CREATE TABLE proveedor_material (
     CONSTRAINT fk_pm_material  FOREIGN KEY (material_id)  REFERENCES materiales(id)  ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- PRESUPUESTOS e ítems (RN-06: vencen a los 15 días)
--- ---------------------------------------------------------------------
 CREATE TABLE presupuestos (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id  INT NOT NULL,
     fecha       DATE NOT NULL,
-    vence       DATE NULL COMMENT 'si se deja vacío, el trigger pone fecha + 15 días',
+    vence       DATE NULL,
     total       DECIMAL(12,2) NOT NULL DEFAULT 0,
     estado      ENUM('pendiente','aceptado','rechazado','vencido') NOT NULL DEFAULT 'pendiente',
     CONSTRAINT fk_presupuestos_cliente FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE RESTRICT
@@ -181,22 +138,15 @@ CREATE TABLE presupuesto_items (
     CONSTRAINT fk_items_presupuesto FOREIGN KEY (presupuesto_id) REFERENCES presupuestos(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- GALERIA de trabajos para la web pública
--- ---------------------------------------------------------------------
 CREATE TABLE galeria (
     id      INT AUTO_INCREMENT PRIMARY KEY,
     titulo  VARCHAR(100) NOT NULL,
-    imagen  VARCHAR(255) NOT NULL COMMENT 'ruta dentro de /uploads',
+    imagen  VARCHAR(255) NOT NULL,
     fecha   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- =====================================================================
---  TRIGGERS de reglas de negocio
--- =====================================================================
 DELIMITER $$
 
--- RN-02: no usar más material del que hay en stock
 CREATE TRIGGER trg_tm_validar_stock
 BEFORE INSERT ON trabajo_material
 FOR EACH ROW
@@ -208,7 +158,6 @@ BEGIN
     END IF;
 END$$
 
--- RN-03, RN-04, RN-05: reglas al cambiar el estado de un trabajo
 CREATE TRIGGER trg_trabajos_estado
 BEFORE UPDATE ON trabajos
 FOR EACH ROW
@@ -227,7 +176,6 @@ BEGIN
     END IF;
 END$$
 
--- RN-04: al quedar Realizado se descuentan los materiales del stock
 CREATE TRIGGER trg_trabajos_descontar_stock
 AFTER UPDATE ON trabajos
 FOR EACH ROW
@@ -240,7 +188,6 @@ BEGIN
     END IF;
 END$$
 
--- RN-06: el presupuesto vence a los 15 días si no se indica otra fecha
 CREATE TRIGGER trg_presupuestos_vence
 BEFORE INSERT ON presupuestos
 FOR EACH ROW
@@ -252,17 +199,11 @@ END$$
 
 DELIMITER ;
 
--- =====================================================================
---  VISTAS para alertas y reportes
--- =====================================================================
-
--- RN-11: materiales con stock bajo
 CREATE VIEW v_stock_bajo AS
 SELECT id, nombre, unidad, stock_actual, stock_minimo
 FROM materiales
 WHERE stock_actual <= stock_minimo;
 
--- RN-12: clientes a los que les toca mantenimiento (último trabajo hace 12 meses o más)
 CREATE VIEW v_mantenimiento_pendiente AS
 SELECT c.id AS cliente_id, c.nombre, c.telefono, c.direccion,
        MAX(t.fecha_realizado) AS ultimo_trabajo
@@ -272,7 +213,6 @@ WHERE c.activo = 1
 GROUP BY c.id, c.nombre, c.telefono, c.direccion
 HAVING MAX(t.fecha_realizado) <= DATE_SUB(CURDATE(), INTERVAL 12 MONTH);
 
--- Garantías que vencen en los próximos 30 días
 CREATE VIEW v_garantias_por_vencer AS
 SELECT t.id AS trabajo_id, c.nombre, c.telefono, s.nombre AS servicio, t.garantia_hasta
 FROM trabajos t
@@ -280,7 +220,6 @@ JOIN clientes c  ON c.id = t.cliente_id
 JOIN servicios s ON s.id = t.servicio_id
 WHERE t.garantia_hasta BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY);
 
--- Ingresos y cantidad de trabajos por mes
 CREATE VIEW v_ingresos_mensuales AS
 SELECT DATE_FORMAT(fecha_realizado, '%Y-%m') AS mes,
        COUNT(*) AS trabajos,
@@ -289,9 +228,6 @@ FROM trabajos
 WHERE estado = 'realizado'
 GROUP BY DATE_FORMAT(fecha_realizado, '%Y-%m');
 
--- =====================================================================
---  DATOS DE PRUEBA
--- =====================================================================
 INSERT INTO usuarios (nombre, email, password_hash, rol) VALUES
 ('Administrador', 'admin@climagestion.test', '$2y$10$FxefwA.g4V8JPKTJzKDUROPCVDSbCVdmBrGWiKESYFF2pJC5k6dWC', 'admin');
 

@@ -1,12 +1,10 @@
 <?php
-/** Presupuestos: listado, alta con ítems y cambio de estado. */
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/layout.php';
 requerir_login();
 
 $db = db();
 
-// Antes de mostrar, los pendientes cuya fecha ya pasó quedan como vencidos
 $db->exec("UPDATE presupuestos SET estado = 'vencido' WHERE estado = 'pendiente' AND vence < CURDATE()");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,9 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($accion === 'nuevo') {
         $cliente = (int)($_POST['cliente_id'] ?? 0);
-        $vence   = ($_POST['vence'] ?? '') !== '' ? $_POST['vence'] : null; // vacío → el trigger pone +15 días
+        $vence   = ($_POST['vence'] ?? '') !== '' ? $_POST['vence'] : null;
 
-        // Arma los ítems a partir de las filas del formulario (ignora las vacías)
         $items = [];
         foreach ($_POST['descripcion'] ?? [] as $i => $desc) {
             $desc   = trim($desc);
@@ -41,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $total = array_sum(array_map(fn($it) => $it[1] * $it[2], $items));
         try {
-            // TRANSACCIÓN: encabezado + ítems, o nada
             $db->beginTransaction();
             $db->prepare('INSERT INTO presupuestos (cliente_id, fecha, vence, total) VALUES (?, CURDATE(), ?, ?)')
                ->execute([$cliente, $vence, $total]);
@@ -61,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($accion === 'estado') {
         $nuevo = in_array($_POST['estado'] ?? '', ['aceptado', 'rechazado'], true) ? $_POST['estado'] : null;
         $id = (int)($_POST['id'] ?? 0);
-        // Solo se cambia si todavía está pendiente
         $st = $db->prepare("UPDATE presupuestos SET estado = ? WHERE id = ? AND estado = 'pendiente'");
         $st->execute([$nuevo, $id]);
         flash($nuevo && $st->rowCount() ? "Presupuesto marcado como $nuevo." : 'Ese presupuesto ya no está pendiente.',
@@ -137,8 +132,6 @@ layout_inicio('Presupuestos', 'presupuestos');
     </template>
 
     <script>
-    // Agrega/quita renglones y recalcula el total en el navegador.
-    // (El servidor vuelve a validar y calcular todo al guardar.)
     const tbody = document.getElementById('items');
     const plantilla = document.getElementById('fila');
     const formato = n => n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });

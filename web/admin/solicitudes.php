@@ -1,8 +1,5 @@
 <?php
-/**
- * Bandeja de solicitudes que llegan desde el formulario web.
- * "Convertir" crea el cliente y un trabajo pendiente en una sola transacción.
- */
+
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/layout.php';
 requerir_login();
@@ -28,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('Esa solicitud ya fue convertida.', 'warning');
         } else {
             try {
-                // Transacción: o se hacen las tres cosas, o ninguna
                 $db->beginTransaction();
                 $db->prepare('INSERT INTO clientes (nombre, telefono, direccion) VALUES (?, ?, ?)')
                    ->execute([$sol['nombre'], $sol['telefono'], $sol['direccion'] ?: 'A confirmar']);

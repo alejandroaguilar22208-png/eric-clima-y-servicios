@@ -1,12 +1,5 @@
 <?php
-/**
- * API REST (solo lectura) para las apps móvil y de escritorio.
- *
- * GET api/trabajos.php?estado=agendado
- * Encabezado obligatorio:  X-API-Key: <API_KEY de config.php>
- *
- * Respuesta: JSON con la lista de trabajos.
- */
+
 require_once __DIR__ . '/../app/config.php';
 
 header('Content-Type: application/json; charset=utf-8');

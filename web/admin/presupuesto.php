@@ -1,9 +1,5 @@
 <?php
-/**
- * Un presupuesto listo para imprimir.
- * Con el botón "Imprimir / Guardar PDF" el navegador lo guarda como PDF
- * (el CSS de @media print oculta el menú y los botones).
- */
+
 require_once __DIR__ . '/../app/auth.php';
 requerir_login();
 

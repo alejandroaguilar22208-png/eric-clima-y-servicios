@@ -91,4 +91,4 @@ y abrís `http://localhost:8080/`.
 
 ## 7. Datos a cambiar por los reales
 
-En `app/config.php`: `TELEFONO`, `WHATSAPP`, `EMAIL` (están marcados con `TODO`). Las fotos van en `uploads/` y se cargan en la tabla `galeria`.
+En `app/config.php`: `TELEFONO`, `WHATSAPP`, `EMAIL` (son datos de ejemplo). Las fotos van en `uploads/` y se cargan en la tabla `galeria`.

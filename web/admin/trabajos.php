@@ -1,9 +1,5 @@
 <?php
-/**
- * Trabajos: alta, agenda, materiales usados y cambio de estado.
- * Ciclo: pendiente → agendado → realizado (o cancelado).
- * Las reglas RN-02 a RN-05 también las controlan los triggers de MySQL.
- */
+
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/layout.php';
 requerir_login();
@@ -22,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $clienteId = (int)($_POST['cliente_id'] ?? 0);
                 $servicioId = (int)($_POST['servicio_id'] ?? 0);
                 $total = (float)($_POST['total'] ?? 0);
-                // RN-01: no hay trabajo sin cliente existente (también lo asegura la clave foránea)
                 if (!$clienteId || !$servicioId) { flash('Elegí cliente y servicio.', 'warning'); break; }
                 if ($total < 0) { flash('El total no puede ser negativo.', 'warning'); break; }
                 $db->prepare('INSERT INTO trabajos (cliente_id, servicio_id, total, observaciones) VALUES (?, ?, ?, ?)')
@@ -53,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
 
             case 'realizado':
-                // El trigger valida fecha + técnico, descuenta stock y pone la garantía
                 $db->prepare("UPDATE trabajos SET estado = 'realizado' WHERE id = ?")->execute([$id]);
                 flash('Trabajo realizado. Se descontó el stock y la garantía corre 12 meses.');
                 break;
@@ -64,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
         }
     } catch (PDOException $ex) {
-        flash(mensaje_error($ex), 'danger'); // ej.: "Stock insuficiente..." viene del trigger
+        flash(mensaje_error($ex), 'danger');
     }
     redirigir($volver);
 }
@@ -86,7 +80,6 @@ $servicios  = $db->query('SELECT id, nombre, precio_base FROM servicios WHERE ac
 $tecnicos   = $db->query('SELECT id, nombre FROM usuarios WHERE activo = 1 ORDER BY nombre')->fetchAll();
 $materiales = $db->query('SELECT id, nombre, stock_actual, unidad FROM materiales ORDER BY nombre')->fetchAll();
 
-// Detalle de un trabajo
 $detalle = null;
 if (isset($_GET['ver'])) {
     $st = $db->prepare($sql . ' WHERE t.id = ?');

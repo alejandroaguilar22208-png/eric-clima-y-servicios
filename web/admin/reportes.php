@@ -1,5 +1,4 @@
 <?php
-/** Reportes de ingresos y trabajos (solo administrador, RN-09). */
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/layout.php';
 requerir_admin();
@@ -13,7 +12,7 @@ $porServicio = $db->query(
 )->fetchAll();
 $porEstado = $db->query('SELECT estado, COUNT(*) AS cantidad FROM trabajos GROUP BY estado')->fetchAll(PDO::FETCH_KEY_PAIR);
 
-$maxServicio = max(array_column($porServicio, 'ingresos') ?: [0]) ?: 1;
+$maxServicio = max(array_map('floatval', array_column($porServicio, 'ingresos')) ?: [0]) ?: 1;
 
 layout_inicio('Reportes', 'reportes');
 ?>

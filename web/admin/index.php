@@ -1,5 +1,4 @@
 <?php
-/** Inicio del panel: números del día y alertas. */
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/layout.php';
 requerir_login();

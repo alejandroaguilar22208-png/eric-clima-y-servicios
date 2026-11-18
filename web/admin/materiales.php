@@ -1,5 +1,4 @@
 <?php
-/** Stock de materiales. Todos lo ven; solo el administrador lo modifica. */
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/layout.php';
 requerir_login();

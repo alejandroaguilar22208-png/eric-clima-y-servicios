@@ -1,8 +1,5 @@
 <?php
-/**
- * ABM de clientes: listado con búsqueda, alta, edición y baja lógica,
- * y los equipos instalados de cada cliente.
- */
+
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/layout.php';
 requerir_login();
@@ -41,9 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             redirigir('clientes.php');
         }
-        $editando = $c; // vuelve a mostrar el formulario con los errores
+        $editando = $c;
     } elseif ($accion === 'baja') {
-        // RN-08 y RN-09: no se borra, se desactiva, y solo el admin
         if (!es_admin()) {
             flash('Solo el administrador puede dar de baja clientes.', 'warning');
         } else {
@@ -66,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ¿Formulario de alta/edición?
 if (!isset($editando)) {
     if (isset($_GET['nuevo'])) {
         $editando = ['id' => 0, 'nombre' => '', 'telefono' => '', 'email' => '', 'direccion' => '', 'localidad' => 'Bahía Blanca'];
@@ -77,7 +72,6 @@ if (!isset($editando)) {
     }
 }
 
-// ¿Ficha de un cliente?
 $ficha = null;
 if (isset($_GET['ver'])) {
     $st = $db->prepare('SELECT * FROM clientes WHERE id = ?');
@@ -105,7 +99,6 @@ $st = $db->prepare(
 $st->execute(array_fill(0, 4, "%$q%"));
 $clientes = $st->fetchAll();
 
-/** Campo de formulario con su mensaje de error. */
 function campo(string $nombre, string $etiqueta, array $datos, array $errores, string $tipo = 'text'): string
 {
     $inv = isset($errores[$nombre]) ? ' is-invalid' : '';

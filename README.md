@@ -46,10 +46,10 @@ El usuario de prueba está en `escritorio/GUIA.md`. Más detalles en `web/GUIA-W
 
 | Archivo | Qué es |
 | --- | --- |
-| `docs/Documentacion-Escritorio.pdf` | Documentación completa del sistema de escritorio (PDF único, con índice vinculado). |
-| `docs/Documentacion-Escritorio.docx` | La misma documentación en Word, para editarla. |
+| `docs/Documentacion-Escritorio.pdf` | Documentación del sistema de escritorio (índice vinculado, diagramas y manual). |
+| `docs/Documentacion-Web.pdf` | Documentación del sitio web (17 puntos de la consigna, diagramas y capturas). |
 | `escritorio/instalador/` | Script del instalador (Inno Setup) y el LEEME que se instala con el programa. |
 | `escritorio/EricClima.Escritorio/Manual.pdf` | Manual de usuario con capturas; se abre desde el programa con F1. |
-| `docs/diagramas/*.drawio` | MER, modelo relacional y diagrama de clases (abrir con draw.io / diagrams.net). |
-| `docs/capturas/` | Capturas de pantalla del sistema. |
+| `docs/diagramas/*.drawio` | MER, modelo relacional, diagrama de clases, DFD y mapa del sitio (draw.io). Sus imágenes están en `docs/diagramas/imagenes/`. |
+| `docs/capturas/` y `docs/capturas-web/` | Capturas del programa de escritorio y del sitio web. |
 

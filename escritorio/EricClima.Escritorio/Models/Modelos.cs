@@ -1,4 +1,4 @@
-namespace EricClima.Escritorio.Models
+﻿namespace EricClima.Escritorio.Models
 {
     // =========================================================
     // MODELO (la "M" de MVC): clases que representan los datos.
@@ -111,5 +111,46 @@ namespace EricClima.Escritorio.Models
 
         /// <summary>RN-05: realizado o cancelado ya no se modifica.</summary>
         public bool EstaCerrado() => Estado == EstadoTrabajo.Realizado || Estado == EstadoTrabajo.Cancelado;
+    }
+
+    public enum EstadoPresupuesto { Pendiente, Aceptado, Rechazado, Vencido }
+
+    /// <summary>Un renglón del presupuesto (COMPOSICIÓN: no existe sin su presupuesto).</summary>
+    public class PresupuestoItem
+    {
+        public string Descripcion { get; set; } = "";
+        public decimal Cantidad { get; set; } = 1;
+        public decimal PrecioUnitario { get; set; }
+
+        public decimal Subtotal() => Cantidad * PrecioUnitario;
+    }
+
+    public class Presupuesto
+    {
+        public int Id { get; set; }
+        public int ClienteId { get; set; }
+        public string ClienteNombre { get; set; } = "";
+        public string ClienteDireccion { get; set; } = "";
+        public string ClienteTelefono { get; set; } = "";
+        public DateTime Fecha { get; set; } = DateTime.Today;
+        public DateTime? Vence { get; set; }          // si queda vacío, el trigger pone +15 días (RN-06)
+        public EstadoPresupuesto Estado { get; set; } = EstadoPresupuesto.Pendiente;
+        public List<PresupuestoItem> Items { get; set; } = new List<PresupuestoItem>();
+
+        /// <summary>El total se calcula sumando los subtotales de los ítems.</summary>
+        public decimal Total() => Items.Sum(i => i.Subtotal());
+
+        public string Validar()
+        {
+            if (ClienteId == 0) return "Elegí un cliente.";
+            if (Items.Count == 0) return "Agregá al menos un ítem.";
+            foreach (var i in Items)
+            {
+                if (string.IsNullOrWhiteSpace(i.Descripcion)) return "Hay un ítem sin descripción.";
+                if (i.Cantidad <= 0) return $"La cantidad de \"{i.Descripcion}\" tiene que ser mayor a 0.";
+                if (i.PrecioUnitario <= 0) return $"El precio de \"{i.Descripcion}\" tiene que ser mayor a 0.";
+            }
+            return "";
+        }
     }
 }

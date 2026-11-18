@@ -29,6 +29,7 @@ namespace EricClima.Escritorio.Views
             menu.Controls.Add(BotonMenu("Clientes", (s, e) => Abrir(new FrmClientes())));
             menu.Controls.Add(BotonMenu("Trabajos", (s, e) => Abrir(new FrmTrabajos())));
             menu.Controls.Add(BotonMenu("Stock", (s, e) => Abrir(new FrmMateriales())));
+            menu.Controls.Add(BotonMenu("Presupuestos", (s, e) => Abrir(new FrmPresupuestos())));
             menu.Controls.Add(BotonMenu("Ayuda (F1)", (s, e) => AbrirAyuda()));
             menu.Controls.Add(BotonMenu("Salir", (s, e) => Close()));
 

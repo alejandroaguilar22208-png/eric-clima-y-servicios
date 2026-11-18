@@ -29,7 +29,10 @@ Recorrido para mostrar en la defensa:
 3. **Trabajos** → Nuevo trabajo → Agendar (fecha y técnico) → Agregar material → Marcar realizado.
    Queda en verde y con fecha de garantía.
 4. **Stock** → el material usado bajó. Las filas en **rojo** tienen stock bajo.
-5. Volvé al menú → aparecen las **alertas**.
+5. **Presupuestos** → Nuevo → elegí cliente, agregá ítems desde la lista (servicio o material) →
+   Guardar → "¿Generar el PDF?" → Sí. Se abre el PDF con logo, ítems, total y vencimiento (15 días).
+   Después marcalo **Aceptado** (queda verde) e intentá rechazarlo: no deja.
+6. Volvé al menú → aparecen las **alertas**.
 
 ---
 
@@ -84,6 +87,9 @@ Están en **dos lugares**: en el controlador (C#), que avisa lindo, y en la base
 | Un técnico no puede tener 2 trabajos a la misma hora | — | Índice único `uq_tecnico_horario` |
 | Los clientes no se borran, se dan de baja | `ClienteRepositorio.Desactivar` | Columna `activo` |
 | Solo el admin da de baja y toca el stock | `Sesion.EsAdmin` | — |
+| El presupuesto vence a los 15 días si no se indica fecha | `PresupuestoController.Crear` | Trigger `trg_presupuestos_vence` |
+| Solo se acepta o rechaza un presupuesto pendiente | `PresupuestoController.CambiarEstado` | — |
+| Presupuesto + ítems se guardan juntos o nada | `PresupuestoRepositorio.Insertar` (transacción) | — |
 
 ---
 
@@ -102,6 +108,8 @@ Están en **dos lugares**: en el controlador (C#), que avisa lindo, y en la base
 - **¿Qué es una clave foránea?** Un campo que apunta a otra tabla. `trabajos.cliente_id` apunta a `clientes.id` y no deja crear un trabajo para un cliente que no existe.
 - **¿Por qué `trabajo_material` es una tabla aparte?** Porque un trabajo usa muchos materiales y un material se usa en muchos trabajos (N a N). Eso lo pide la normalización (1FN).
 - **¿Qué pasa si se cae la base?** El controlador atrapa el error (`try/catch`) y muestra un mensaje en vez de cerrarse.
+- **¿Cómo hacés el PDF?** Con la librería **QuestPDF** (NuGet, licencia Community gratuita). Está en `Views/PresupuestoPdf.cs`: arma encabezado, tabla de ítems, total y pie con número de página.
+- **¿Qué es una transacción?** Al guardar un presupuesto se insertan el encabezado y los ítems. Si falla uno, `Rollback()` deshace todo para que no quede un presupuesto a medias.
 - **¿Cómo se conecta con la web?** Las dos usan la misma base `climagestion`. Lo que entra por el formulario web queda en `solicitudes`.
 
 ---
@@ -113,16 +121,16 @@ escritorio/
 ├── EricClima.slnx                      ← abrir con Visual Studio
 └── EricClima.Escritorio/
     ├── Program.cs                      ← arranca: login → menú
-    ├── Models/Modelos.cs               ← M: Persona, Cliente, Usuario, Trabajo, Material, Servicio
+    ├── Models/Modelos.cs               ← M: Persona, Cliente, Usuario, Trabajo, Material, Servicio, Presupuesto
     ├── Controllers/Controladores.cs    ← C: reglas de negocio + Sesion + Resultado
     ├── Data/                           ← SQL: Conexion, IRepositorio y un repositorio por tabla
-    └── Views/                          ← V: FrmLogin, FrmPrincipal, FrmClientes, FrmTrabajos, FrmMateriales, Ui
+    └── Views/                          ← V: FrmLogin, FrmPrincipal, FrmClientes, FrmTrabajos, FrmMateriales, FrmPresupuestos, PresupuestoPdf, Ui
 database/climagestion.sql               ← la base completa con datos de prueba
 ```
 
 ## 9. Lo que falta (si te da el tiempo)
 
-- [ ] Presupuestos con PDF (está en la base, falta la pantalla).
+- [x] Presupuestos con PDF.
 - [ ] Pantalla de proveedores.
 - [ ] Bandeja de solicitudes que llegan de la web.
 - [ ] `Manual.pdf` al lado del .exe (el botón Ayuda ya lo abre).

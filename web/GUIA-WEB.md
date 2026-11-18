@@ -37,8 +37,10 @@ y abrís `http://localhost:8080/`.
 5. **Solicitudes** → "Convertir en trabajo".
 6. **Trabajos** → abrir el trabajo → intentar "Marcar realizado" sin agendar (lo frena) → agendar →
    cargar 50 kg de gas (lo frena por stock) → cargar 3 m de caño → marcar realizado.
-7. **Stock** → el caño bajó. **Clientes** → ficha con equipos e historial. **Reportes** → ingresos.
-8. **Salir** y probar entrar a `admin/clientes.php` sin sesión: te manda al login.
+7. **Presupuestos** → Nuevo → cliente + "Agregar rápido" (el total se calcula solo) → Guardar →
+   se abre la hoja del presupuesto → **Imprimir / Guardar PDF** → "Guardar como PDF".
+8. **Stock** → el caño bajó. **Clientes** → ficha con equipos e historial. **Reportes** → ingresos.
+9. **Salir** y probar entrar a `admin/clientes.php` sin sesión: te manda al login.
 
 ---
 
@@ -52,6 +54,8 @@ y abrís `http://localhost:8080/`.
 | `public/index.php` | Sitio público (lee servicios y galería de la base). |
 | `public/solicitud.php` | Recibe el formulario, valida y guarda en `solicitudes`. |
 | `admin/*.php` | Una página por módulo: inicio, solicitudes, clientes, trabajos, stock, reportes. |
+| `admin/presupuestos.php` | Lista, alta con ítems (en una transacción) y aceptar/rechazar. |
+| `admin/presupuesto.php` | La hoja del presupuesto lista para imprimir o guardar como PDF (`@media print`). |
 | `api/trabajos.php` | API REST en JSON para las apps (pide la clave `X-API-Key`). |
 | `assets/css/estilos.css` | Colores de la marca. |
 
@@ -81,6 +85,7 @@ y abrís `http://localhost:8080/`.
 - **¿Por qué es "dinámico"?** Porque el contenido sale de la base: si cambian los servicios o precios en MySQL, la página cambia sola.
 - **¿Qué es PDO?** La forma de PHP de hablar con la base usando consultas preparadas.
 - **¿Qué es una transacción?** Al convertir una solicitud se crean cliente + trabajo + se actualiza la solicitud. Si algo falla, se deshace todo (`rollBack`).
+- **¿Cómo sacan el PDF en la web?** La página `presupuesto.php` tiene un CSS especial para imprimir (`@media print`) que oculta los botones. El navegador lo guarda como PDF con "Imprimir → Guardar como PDF".
 - **¿Para qué la API?** Para que la app móvil o la de escritorio puedan leer los trabajos en JSON. Ejemplo: `api/trabajos.php?estado=agendado`.
 - **¿Validan en el navegador o en el servidor?** En los dos: JavaScript avisa rápido, pero el servidor vuelve a validar porque el navegador se puede saltear.
 

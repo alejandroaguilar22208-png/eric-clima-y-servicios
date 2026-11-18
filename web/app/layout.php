@@ -13,6 +13,7 @@ function layout_inicio(string $titulo, string $activo = ''): void
         'clientes'    => 'Clientes',
         'trabajos'    => 'Trabajos',
         'materiales'  => 'Stock',
+        'presupuestos' => 'Presupuestos',
     ];
     if (es_admin()) $menu['reportes'] = 'Reportes';
     ?>
@@ -66,6 +67,7 @@ function layout_fin(): void
 function badge_estado(string $estado): string
 {
     $colores = ['pendiente' => 'warning', 'agendado' => 'primary', 'realizado' => 'success', 'cancelado' => 'secondary',
-                'contactado' => 'info', 'convertida' => 'success', 'descartada' => 'secondary'];
+                'contactado' => 'info', 'convertida' => 'success', 'descartada' => 'secondary',
+                'aceptado' => 'success', 'rechazado' => 'danger', 'vencido' => 'secondary'];
     return '<span class="badge text-bg-' . ($colores[$estado] ?? 'light') . '">' . e(ucfirst($estado)) . '</span>';
 }

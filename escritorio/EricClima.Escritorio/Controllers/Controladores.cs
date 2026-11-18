@@ -1,4 +1,4 @@
-using EricClima.Escritorio.Data;
+﻿using EricClima.Escritorio.Data;
 using EricClima.Escritorio.Models;
 using MySqlConnector;
 
@@ -166,6 +166,56 @@ namespace EricClima.Escritorio.Controllers
                 return Resultado.Bien("Material modificado.");
             }
             catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
+    }
+
+    public class PresupuestoController
+    {
+        private readonly PresupuestoRepositorio repo = new PresupuestoRepositorio();
+
+        public List<Presupuesto> Listar()
+        {
+            repo.MarcarVencidos(); // antes de mostrar, actualiza los que ya pasaron su fecha
+            return repo.Listar();
+        }
+
+        public Resultado Crear(Presupuesto p)
+        {
+            string error = p.Validar();
+            if (error != "") return Resultado.Error(error);
+            try
+            {
+                p.Id = repo.Insertar(p);
+                Presupuesto guardado = repo.ObtenerPorId(p.Id);
+                p.Vence = guardado.Vence; // la fecha que puso el trigger
+                return Resultado.Bien($"Presupuesto N.º {p.Id} guardado. Vence el {p.Vence:dd/MM/yyyy}.");
+            }
+            catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
+
+        /// <summary>Solo se puede aceptar o rechazar un presupuesto pendiente.</summary>
+        public Resultado CambiarEstado(Presupuesto p, EstadoPresupuesto nuevo)
+        {
+            if (p.Estado != EstadoPresupuesto.Pendiente)
+                return Resultado.Error($"El presupuesto ya está {p.Estado.ToString().ToLower()}; no se puede cambiar.");
+            try
+            {
+                repo.CambiarEstado(p.Id, nuevo);
+                p.Estado = nuevo;
+                return Resultado.Bien($"Presupuesto marcado como {nuevo.ToString().ToLower()}.");
+            }
+            catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
+
+        /// <summary>Genera el PDF del presupuesto en la ruta elegida.</summary>
+        public Resultado ExportarPdf(Presupuesto p, string ruta)
+        {
+            try
+            {
+                Views.PresupuestoPdf.Generar(p, ruta);
+                return Resultado.Bien("PDF generado.");
+            }
+            catch (Exception ex) { return Resultado.Error("No se pudo crear el PDF: " + ex.Message); }
         }
     }
 }

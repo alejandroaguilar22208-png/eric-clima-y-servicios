@@ -1,47 +1,183 @@
 :root {
     --marca: #005caf;
-    --marca-oscuro: #00468c;
-    --marca-claro: #e8f1fb;
+    --marca-oscuro: #003f7d;
+    --marca-noche: #0b2340;
+    --marca-claro: #eaf3fc;
+    --acento: #ff7a1a;
+    --acento-oscuro: #e9650a;
+    --verde-wa: #25d366;
+    --texto: #1f2d3d;
+    --gris: #64748b;
+    --sombra: 0 10px 30px rgba(11, 35, 64, .08);
+    --sombra-fuerte: 0 18px 40px rgba(11, 35, 64, .16);
 }
 
 .bg-marca { background-color: var(--marca) !important; }
 .text-marca { color: var(--marca) !important; }
-.btn-marca { background-color: var(--marca); border-color: var(--marca); color: #fff; }
-.btn-marca:hover { background-color: var(--marca-oscuro); border-color: var(--marca-oscuro); color: #fff; }
+.btn-marca { background-color: var(--marca); border-color: var(--marca); color: #fff; font-weight: 500; }
+.btn-marca:hover, .btn-marca:focus { background-color: var(--marca-oscuro); border-color: var(--marca-oscuro); color: #fff; }
+.btn-acento { background: var(--acento); border-color: var(--acento); color: #fff; font-weight: 600; box-shadow: 0 6px 16px rgba(255, 122, 26, .35); }
+.btn-acento:hover, .btn-acento:focus { background: var(--acento-oscuro); border-color: var(--acento-oscuro); color: #fff; transform: translateY(-1px); }
+.btn-whatsapp { background: var(--verde-wa); border-color: var(--verde-wa); color: #fff; font-weight: 600; }
+.btn-whatsapp:hover, .btn-whatsapp:focus { background: #1ebe5b; border-color: #1ebe5b; color: #fff; }
 
-.hero {
-    background: linear-gradient(135deg, var(--marca) 0%, var(--marca-oscuro) 100%);
-    color: #fff;
-    padding: 96px 0 80px;
-}
-.hero .lead { opacity: .9; }
-
-section { scroll-margin-top: 70px; }
-.seccion { padding: 72px 0; }
+.sitio { font-family: 'Poppins', system-ui, sans-serif; color: var(--texto); }
+section { scroll-margin-top: 80px; }
+.seccion { padding: 88px 0; }
 .seccion-alt { background: var(--marca-claro); }
 
-.tarjeta-servicio { border: 0; border-top: 4px solid var(--marca); transition: transform .15s; }
-.tarjeta-servicio:hover { transform: translateY(-4px); }
+.barra-superior { background: var(--marca-noche); color: #c8d6e8; font-size: .85rem; padding: 7px 0; }
+.barra-superior a { color: #c8d6e8; text-decoration: none; }
+.barra-superior a:hover { color: #fff; }
+.barra-superior i { color: var(--acento); margin-right: 4px; }
 
-.paso-numero {
-    width: 48px; height: 48px; border-radius: 50%;
-    background: var(--marca); color: #fff; font-weight: 700; font-size: 1.25rem;
-    display: inline-flex; align-items: center; justify-content: center;
-}
+.menu-principal { box-shadow: 0 2px 18px rgba(11, 35, 64, .08); padding: 12px 0; }
+.menu-principal .nav-link { font-weight: 500; color: var(--texto); padding: 8px 14px !important; border-radius: 50px; transition: background .15s, color .15s; }
+.menu-principal .nav-link:hover { color: var(--marca); background: var(--marca-claro); }
+.menu-principal .nav-link.active { color: #fff !important; background: var(--marca); }
 
-.galeria img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; }
-.galeria-vacia {
-    height: 220px; border-radius: 8px; border: 2px dashed #b8cde3;
-    display: flex; align-items: center; justify-content: center; color: #6c84a0; background: #fff;
-}
+.marca-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--marca-noche); line-height: 1.05; }
+.marca-logo b { display: block; font-size: 1.25rem; font-weight: 800; }
+.marca-logo small { display: block; font-size: .8rem; color: var(--gris); font-weight: 500; }
+.marca-logo.claro { color: #fff; }
+.marca-logo.claro small { color: #9fb3cc; }
+.logo-icono { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--marca), #2b9af3); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 1.4rem; }
 
-.boton-whatsapp {
-    position: fixed; right: 20px; bottom: 20px; z-index: 1000;
-    background: #25d366; color: #fff; border-radius: 50px; padding: 12px 20px;
-    font-weight: 600; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,.2);
-}
-.boton-whatsapp:hover { background: #1ebe5b; color: #fff; }
+.hero { position: relative; overflow: hidden; color: #fff; padding: 100px 0 110px;
+    background: radial-gradient(circle at 85% 20%, rgba(43, 154, 243, .45), transparent 45%), linear-gradient(135deg, var(--marca) 0%, var(--marca-noche) 100%); }
+.hero-burbuja { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, .06); }
+.hero-burbuja.b1 { width: 420px; height: 420px; right: -120px; bottom: -180px; }
+.hero-burbuja.b2 { width: 220px; height: 220px; left: -80px; top: -60px; }
+.etiqueta-hero { display: inline-block; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .25); padding: 6px 14px; border-radius: 50px; font-size: .85rem; margin-bottom: 18px; }
+.hero-titulo { font-size: clamp(2rem, 4.4vw, 3.2rem); font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+.hero-titulo span { color: #ffd2ad; }
+.hero-texto { font-size: 1.15rem; opacity: .9; margin-bottom: 28px; max-width: 600px; }
+.tarjeta-ventaja { background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .18); backdrop-filter: blur(6px); border-radius: 18px; padding: 20px; height: 100%; transition: transform .2s, background .2s; }
+.tarjeta-ventaja:hover { transform: translateY(-4px); background: rgba(255, 255, 255, .16); }
+.tarjeta-ventaja i { font-size: 1.8rem; color: #ffd2ad; display: block; margin-bottom: 8px; }
+.tarjeta-ventaja b { display: block; font-size: 1.1rem; }
+.tarjeta-ventaja span { font-size: .85rem; opacity: .85; }
 
+.titulo-seccion { text-align: center; max-width: 680px; margin: 0 auto 48px; }
+.titulo-seccion h2 { font-weight: 800; font-size: clamp(1.8rem, 3vw, 2.4rem); color: var(--marca-noche); margin-bottom: 10px; }
+.titulo-seccion p { color: var(--gris); margin: 0; }
+.sobretitulo { display: inline-block; color: var(--acento); font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; margin-bottom: 8px; }
+.sobretitulo.claro { color: #ffb37a; }
+
+.tarjeta-servicio { background: #fff; border-radius: 20px; padding: 28px; box-shadow: var(--sombra); display: flex; flex-direction: column; border: 1px solid #eef2f7; transition: transform .2s, box-shadow .2s; }
+.tarjeta-servicio:hover { transform: translateY(-6px); box-shadow: var(--sombra-fuerte); }
+.tarjeta-servicio h3 { font-size: 1.2rem; font-weight: 700; color: var(--marca-noche); }
+.tarjeta-servicio p { color: var(--gris); font-size: .95rem; }
+.icono-servicio { width: 60px; height: 60px; border-radius: 16px; background: var(--marca-claro); color: var(--marca); display: flex; align-items: center; justify-content: center; font-size: 1.7rem; margin-bottom: 18px; transition: background .2s, color .2s; }
+.tarjeta-servicio:hover .icono-servicio { background: var(--marca); color: #fff; }
+.precio-desde { color: var(--gris); font-size: .9rem; }
+.precio-desde b { color: var(--marca); font-size: 1.1rem; }
+.enlace-flecha { font-weight: 600; color: var(--acento); text-decoration: none; }
+.enlace-flecha:hover { color: var(--acento-oscuro); }
+
+.calculadora { background: linear-gradient(135deg, var(--marca), var(--marca-oscuro)); color: #fff; border-radius: 20px; padding: 24px 28px; box-shadow: var(--sombra-fuerte); }
+.calculadora .form-control { border: 0; border-radius: 12px; padding: 10px 14px; }
+.resultado-calculo { background: rgba(255, 255, 255, .14); border-radius: 14px; padding: 12px 16px; text-align: center; }
+.resultado-calculo b { font-size: 1.4rem; color: #ffd2ad; }
+
+.filtros { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.filtros button { border: 2px solid #cfe0f3; background: #fff; color: var(--marca-noche); border-radius: 50px; padding: 7px 18px; font-weight: 600; font-size: .9rem; transition: all .15s; }
+.filtros button:hover { border-color: var(--marca); color: var(--marca); }
+.filtros button.active { background: var(--marca); border-color: var(--marca); color: #fff; }
+
+.tarjeta-equipo { position: relative; background: #fff; border-radius: 20px; padding: 24px; box-shadow: var(--sombra); display: flex; flex-direction: column; border: 2px solid transparent; transition: transform .2s, box-shadow .2s, border-color .2s; overflow: hidden; }
+.tarjeta-equipo:hover { transform: translateY(-6px); box-shadow: var(--sombra-fuerte); }
+.equipo-cabecera { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.equipo-marca { background: var(--marca-noche); color: #fff; font-weight: 700; letter-spacing: .05em; padding: 4px 12px; border-radius: 8px; font-size: .85rem; }
+.estado-stock { font-size: .8rem; font-weight: 600; }
+.estado-stock.disponible { color: #16a34a; }
+.estado-stock.pedido { color: var(--gris); }
+.equipo-frigorias { font-size: 2.1rem; font-weight: 800; color: var(--marca); line-height: 1; }
+.equipo-frigorias small { font-size: .9rem; font-weight: 600; color: var(--gris); }
+.equipo-modelo { font-size: 1.05rem; font-weight: 600; margin: 8px 0 12px; color: var(--marca-noche); }
+.equipo-etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.equipo-etiquetas span { background: var(--marca-claro); color: var(--marca-oscuro); border-radius: 50px; padding: 3px 10px; font-size: .78rem; font-weight: 500; }
+.equipo-etiquetas span.inverter { background: #fff1e6; color: var(--acento-oscuro); }
+.equipo-descripcion { color: var(--gris); font-size: .9rem; }
+.equipo-pie { margin-top: auto; padding-top: 14px; border-top: 1px dashed #dbe5f0; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.equipo-precio { font-size: 1.35rem; font-weight: 800; color: var(--marca-noche); }
+.recomendado-cinta { display: none; position: absolute; top: 16px; right: -36px; transform: rotate(35deg); background: var(--acento); color: #fff; font-size: .72rem; font-weight: 700; padding: 4px 40px; }
+.equipo.recomendado .tarjeta-equipo { border-color: var(--acento); box-shadow: 0 18px 40px rgba(255, 122, 26, .25); }
+.equipo.recomendado .recomendado-cinta { display: block; }
+.equipo.recomendado .estado-stock { visibility: hidden; }
+
+.paso { text-align: center; padding: 10px 14px; }
+.paso-icono { position: relative; width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 24px; background: var(--marca-claro); color: var(--marca); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; transition: transform .2s; }
+.paso:hover .paso-icono { transform: rotate(-6deg) scale(1.05); }
+.paso-icono span { position: absolute; top: -8px; right: -8px; width: 30px; height: 30px; border-radius: 50%; background: var(--acento); color: #fff; font-size: .9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; }
+.paso h3 { font-size: 1.05rem; font-weight: 700; color: var(--marca-noche); }
+.paso p { color: var(--gris); font-size: .92rem; margin: 0; }
+
+.seccion-oscura { background: linear-gradient(135deg, var(--marca-noche), #12355f); color: #d6e2f0; }
+.seccion-oscura h2 { color: #fff; font-size: clamp(1.8rem, 3vw, 2.4rem); }
+.seccion-oscura b { color: #fff; }
+.tarjeta-valor { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .12); border-radius: 18px; padding: 22px; height: 100%; transition: background .2s, transform .2s; }
+.tarjeta-valor:hover { background: rgba(255, 255, 255, .1); transform: translateY(-4px); }
+.tarjeta-valor i { font-size: 1.7rem; color: var(--acento); }
+.tarjeta-valor h3 { font-size: 1.05rem; color: #fff; font-weight: 700; margin: 10px 0 6px; }
+.tarjeta-valor p { font-size: .9rem; margin: 0; }
+
+.tarjeta-contacto { background: linear-gradient(160deg, var(--marca), var(--marca-noche)); color: #fff; border-radius: 20px; padding: 28px; box-shadow: var(--sombra-fuerte); }
+.tarjeta-contacto h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; }
+.tarjeta-contacto .dato { display: flex; align-items: center; gap: 14px; color: #fff; text-decoration: none; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, .12); word-break: break-word; }
+.tarjeta-contacto .dato i { flex: 0 0 42px; height: 42px; border-radius: 12px; background: rgba(255, 255, 255, .14); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.tarjeta-contacto .dato small { display: block; font-size: .75rem; opacity: .7; }
+.tarjeta-formulario { background: #fff; border-radius: 20px; padding: 28px; box-shadow: var(--sombra); border: 1px solid #eef2f7; }
+.tarjeta-formulario .form-control, .tarjeta-formulario .form-select { border-radius: 12px; padding: 11px 14px; background: #f7fafd; border-color: #dfe8f2; }
+.tarjeta-formulario .form-control:focus, .tarjeta-formulario .form-select:focus { background: #fff; border-color: var(--marca); box-shadow: 0 0 0 .2rem rgba(0, 92, 175, .15); }
+.tarjeta-formulario .form-label { font-weight: 500; font-size: .92rem; }
+
+.pie { background: var(--marca-noche); color: #9fb3cc; padding: 56px 0 24px; }
+.pie h4 { color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+.pie a { display: block; color: #9fb3cc; text-decoration: none; margin-bottom: 6px; }
+.pie a:hover { color: #fff; }
+.pie-final { margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, .1); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: .88rem; }
+.pie-final a { display: inline; margin: 0; }
+
+.boton-whatsapp { position: fixed; right: 22px; bottom: 22px; z-index: 1000; width: 60px; height: 60px; border-radius: 50%; background: var(--verde-wa); color: #fff; font-size: 1.9rem; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 8px 24px rgba(37, 211, 102, .45); animation: latido 2.4s infinite; }
+.boton-whatsapp:hover { color: #fff; background: #1ebe5b; }
+@keyframes latido { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+.panel { font-family: 'Poppins', system-ui, sans-serif; background: #f2f6fb; }
+.panel-menu { background: linear-gradient(90deg, var(--marca-noche), var(--marca)); box-shadow: 0 4px 16px rgba(11, 35, 64, .2); }
+.panel-menu .nav-link { color: rgba(255, 255, 255, .85) !important; border-radius: 10px; padding: 8px 12px !important; margin: 2px; font-weight: 500; transition: background .15s; }
+.panel-menu .nav-link:hover { background: rgba(255, 255, 255, .12); color: #fff !important; }
+.panel-menu .nav-link.active { background: #fff; color: var(--marca) !important; font-weight: 600; }
+.panel-menu .nav-link i { margin-right: 4px; }
+.panel h1 { color: var(--marca-noche); font-weight: 700; }
+.panel .card { border: 0; border-radius: 16px; overflow: hidden; }
+.panel .table thead th { font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; color: var(--gris); }
+.panel .btn { border-radius: 10px; }
+
+.tarjeta-numero { border-left: 5px solid var(--marca) !important; }
 .tarjeta-numero .numero { font-size: 2rem; font-weight: 700; color: var(--marca); }
 .fila-stock-bajo td { background-color: #fde2e2 !important; }
-.barra { background: var(--marca); height: 18px; border-radius: 4px; min-width: 2px; }
+.barra { background: linear-gradient(90deg, var(--marca), #2b9af3); height: 18px; border-radius: 6px; min-width: 2px; }
+
+@media (max-width: 991px) {
+    .menu-principal .nav-link.active { background: var(--marca-claro); color: var(--marca) !important; }
+    .seccion { padding: 64px 0; }
+    .hero { padding: 64px 0 80px; }
+}
+
+.icono-numero { flex: 0 0 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: var(--marca-claro); color: var(--marca); }
+.tarjeta-numero { transition: transform .15s, box-shadow .15s; }
+a .tarjeta-numero:hover { transform: translateY(-3px); box-shadow: var(--sombra-fuerte) !important; }
+.tarjeta-verde { border-left-color: #16a34a !important; }
+.tarjeta-verde .icono-numero { background: #e3f6e9; color: #16a34a; }
+.tarjeta-verde .numero { color: #16a34a; }
+.tarjeta-naranja { border-left-color: var(--acento) !important; }
+.tarjeta-naranja .icono-numero { background: #fff1e6; color: var(--acento-oscuro); }
+.tarjeta-naranja .numero { color: var(--acento-oscuro); }
+.tarjeta-rojo { border-left-color: #dc2626 !important; }
+.tarjeta-rojo .icono-numero { background: #fde8e8; color: #dc2626; }
+.tarjeta-rojo .numero { color: #dc2626; }
+
+.fondo-login { background: radial-gradient(circle at 80% 10%, rgba(43, 154, 243, .5), transparent 45%), linear-gradient(135deg, var(--marca), var(--marca-noche)); }
+.tarjeta-login { background: #fff; border-radius: 24px; padding: 36px; box-shadow: 0 24px 60px rgba(0, 0, 0, .3); }
+.logo-icono.grande { width: 72px; height: 72px; border-radius: 20px; font-size: 2.2rem; }

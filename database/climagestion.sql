@@ -138,11 +138,19 @@ CREATE TABLE presupuesto_items (
     CONSTRAINT fk_items_presupuesto FOREIGN KEY (presupuesto_id) REFERENCES presupuestos(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE galeria (
-    id      INT AUTO_INCREMENT PRIMARY KEY,
-    titulo  VARCHAR(100) NOT NULL,
-    imagen  VARCHAR(255) NOT NULL,
-    fecha   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE equipos_venta (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    marca        VARCHAR(50)  NOT NULL,
+    modelo       VARCHAR(80)  NOT NULL,
+    tipo         ENUM('split','ventana','portatil','piso_techo') NOT NULL DEFAULT 'split',
+    frigorias    INT          NOT NULL,
+    frio_calor   TINYINT(1)   NOT NULL DEFAULT 1,
+    inverter     TINYINT(1)   NOT NULL DEFAULT 0,
+    precio       DECIMAL(12,2) NOT NULL,
+    stock        INT          NOT NULL DEFAULT 0,
+    descripcion  VARCHAR(255) NULL,
+    activo       TINYINT(1)   NOT NULL DEFAULT 1,
+    CONSTRAINT chk_equipos_venta CHECK (frigorias > 0 AND precio > 0 AND stock >= 0)
 ) ENGINE=InnoDB;
 
 DELIMITER $$
@@ -230,6 +238,17 @@ GROUP BY DATE_FORMAT(fecha_realizado, '%Y-%m');
 
 INSERT INTO usuarios (nombre, email, password_hash, rol) VALUES
 ('Administrador', 'admin@climagestion.test', '$2y$10$FxefwA.g4V8JPKTJzKDUROPCVDSbCVdmBrGWiKESYFF2pJC5k6dWC', 'admin');
+
+INSERT INTO equipos_venta (marca, modelo, tipo, frigorias, frio_calor, inverter, precio, stock, descripcion) VALUES
+('BGH',     'Silent Air BS26WCCR',   'split',      2250, 1, 0,  780000, 3, 'Ideal para dormitorios de hasta 12 m².'),
+('Surrey',  'Pría Inverter 3200',    'split',      2750, 1, 1, 1050000, 2, 'Inverter: gasta hasta un 40% menos de luz.'),
+('Philco',  'PHS32HA4AN',            'split',      2800, 1, 0,  820000, 4, 'Buena relación precio y calidad para ambientes medianos.'),
+('Samsung', 'WindFree AR12',         'split',      3000, 1, 1, 1390000, 2, 'Inverter, muy silencioso y con control por Wi-Fi.'),
+('LG',      'Dual Inverter S4-W18',  'split',      4500, 1, 1, 1780000, 1, 'Para livings y comedores de hasta 30 m².'),
+('Midea',   'Xtreme Save 5400',      'split',      5400, 1, 1, 1950000, 1, 'Alta potencia para ambientes grandes.'),
+('BGH',     'Ventana BC30CP',        'ventana',    3000, 0, 0,  690000, 2, 'Solo frío. Fácil de instalar en una abertura de pared.'),
+('Midea',   'Portátil MPPD-09',      'portatil',   2250, 0, 0,  620000, 3, 'Sin instalación: se enchufa y se mueve de ambiente.'),
+('Surrey',  'Piso-techo 15000',      'piso_techo', 15000, 1, 0, 4900000, 0, 'Para locales y oficinas. Consultar disponibilidad.');
 
 INSERT INTO servicios (nombre, descripcion, precio_base) VALUES
 ('Instalación de split',     'Instalación completa con hasta 3 m de cañería, soportes y prueba de funcionamiento.', 120000),

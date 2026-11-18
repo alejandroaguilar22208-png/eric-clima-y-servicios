@@ -21,17 +21,17 @@ layout_inicio('Inicio', 'index');
 <div class="row g-3 mb-4">
     <?php
     $tarjetas = [
-        ['Solicitudes nuevas', $solicitudesPendientes, 'solicitudes.php'],
-        ['Trabajos hoy', $trabajosHoy, 'trabajos.php?estado=agendado'],
-        ['Sin agendar', $sinAgendar, 'trabajos.php?estado=pendiente'],
-        ['Materiales con stock bajo', count($stockBajo), 'materiales.php'],
+        ['Solicitudes nuevas', $solicitudesPendientes, 'solicitudes.php', 'bi-inbox-fill', 'azul'],
+        ['Trabajos hoy', $trabajosHoy, 'trabajos.php?estado=agendado', 'bi-calendar-check-fill', 'verde'],
+        ['Sin agendar', $sinAgendar, 'trabajos.php?estado=pendiente', 'bi-hourglass-split', 'naranja'],
+        ['Materiales con stock bajo', count($stockBajo), 'materiales.php', 'bi-exclamation-triangle-fill', 'rojo'],
     ];
-    foreach ($tarjetas as [$texto, $numero, $link]): ?>
+    foreach ($tarjetas as [$texto, $numero, $link, $icono, $color]): ?>
         <div class="col-6 col-lg-3">
             <a href="<?= $link ?>" class="text-decoration-none">
-                <div class="card tarjeta-numero shadow-sm h-100"><div class="card-body">
-                    <div class="numero"><?= (int)$numero ?></div>
-                    <div class="text-muted"><?= $texto ?></div>
+                <div class="card tarjeta-numero tarjeta-<?= $color ?> shadow-sm h-100"><div class="card-body d-flex align-items-center gap-3">
+                    <div class="icono-numero"><i class="bi <?= $icono ?>"></i></div>
+                    <div><div class="numero"><?= (int)$numero ?></div><div class="text-muted small"><?= $texto ?></div></div>
                 </div></div>
             </a>
         </div>
@@ -41,7 +41,7 @@ layout_inicio('Inicio', 'index');
 <div class="row g-4">
     <div class="col-lg-6">
         <div class="card shadow-sm h-100">
-            <div class="card-header fw-semibold">Agenda de hoy</div>
+            <div class="card-header fw-semibold"><i class="bi bi-calendar-day text-marca"></i> Agenda de hoy</div>
             <ul class="list-group list-group-flush">
                 <?php foreach ($agendaHoy as $t): ?>
                     <li class="list-group-item">
@@ -55,7 +55,7 @@ layout_inicio('Inicio', 'index');
     </div>
     <div class="col-lg-6">
         <div class="card shadow-sm h-100">
-            <div class="card-header fw-semibold">Alertas</div>
+            <div class="card-header fw-semibold"><i class="bi bi-bell-fill text-marca"></i> Alertas</div>
             <ul class="list-group list-group-flush">
                 <?php foreach ($stockBajo as $m): ?>
                     <li class="list-group-item list-group-item-danger">Stock bajo: <?= e($m['nombre']) ?> — quedan <?= (float)$m['stock_actual'] ?> <?= e($m['unidad']) ?></li>

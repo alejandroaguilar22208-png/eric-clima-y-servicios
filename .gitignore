@@ -10,5 +10,3 @@ web/uploads/*
 *.exe
 asistencia_escritorio/
 
-.claude/
-web/.claude/

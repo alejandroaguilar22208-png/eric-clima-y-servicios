@@ -23,7 +23,8 @@ y abrís `http://localhost:8080/`.
 ## 2. Qué decir en 30 segundos
 
 > "Es el sitio de Eric Clima y Servicios. Tiene una **parte pública** donde el cliente ve los servicios
-> (que salen de la base de datos), cómo trabajamos, preguntas frecuentes y un **formulario para pedir presupuesto**.
+> (que salen de la base de datos), los **equipos en venta** con una calculadora de frigorías, cómo trabajamos,
+> quiénes somos y un **formulario para pedir presupuesto**.
 > Ese pedido entra al **panel privado**, donde el técnico lo convierte en cliente y trabajo, lo agenda,
 > carga los materiales y lo cierra. Al cerrarlo, la base **descuenta el stock y pone 12 meses de garantía**.
 > Usa la **misma base de datos** que el sistema de escritorio en C#."
@@ -51,7 +52,8 @@ y abrís `http://localhost:8080/`.
 | `app/config.php` | Conexión PDO, datos del negocio, funciones comunes (escapar HTML, CSRF, mensajes). |
 | `app/auth.php` | Login, sesión y roles (`requerir_login`, `requerir_admin`). |
 | `app/layout.php` | Encabezado con menú y pie del panel, para no repetirlos en cada página. |
-| `public/index.php` | Sitio público (lee servicios y galería de la base). |
+| `public/index.php` | Sitio público (lee servicios y equipos en venta de la base). |
+| `admin/equipos.php` | Alta, edición y ocultar/mostrar los equipos en venta (solo admin modifica). |
 | `public/solicitud.php` | Recibe el formulario, valida y guarda en `solicitudes`. |
 | `admin/*.php` | Una página por módulo: inicio, solicitudes, clientes, trabajos, stock, reportes. |
 | `admin/presupuestos.php` | Lista, alta con ítems (en una transacción) y aceptar/rechazar. |
@@ -91,4 +93,11 @@ y abrís `http://localhost:8080/`.
 
 ## 7. Datos a cambiar por los reales
 
-En `app/config.php`: `TELEFONO`, `WHATSAPP`, `EMAIL` (son datos de ejemplo). Las fotos van en `uploads/` y se cargan en la tabla `galeria`.
+En `app/config.php`: `TELEFONO`, `WHATSAPP`, `EMAIL` (ahora tienen datos de prueba). Los equipos en venta se cargan desde el panel, en **Equipos en venta** (tabla `equipos_venta`).
+
+## 8. Equipos en venta
+
+- **¿De dónde salen los equipos de la página?** De la tabla `equipos_venta`. Se cargan desde el panel; si un equipo se oculta, deja de verse en la web pero no se borra.
+- **¿Cómo funciona la calculadora de frigorías?** Con JavaScript: metros² × 2,6 m de alto × 50 frigorías (20 % más si le da el sol). Marca como *Recomendado* los equipos que alcanzan esa potencia.
+- **¿Qué pasa al tocar "Consultar"?** Completa el mensaje del formulario con la marca y el modelo, así el pedido llega al panel como una solicitud más.
+

@@ -8,9 +8,9 @@ const DB_USER = 'root';
 const DB_PASS = '';
 
 const EMPRESA   = 'Eric Clima y Servicios';
-const TELEFONO  = '291 400-0000';
-const WHATSAPP  = '5492914000000';
-const EMAIL     = 'contacto@ericclima.test';
+const TELEFONO  = '291 533-4545';
+const WHATSAPP  = '5492915334545';
+const EMAIL     = 'alejandroaguilar22208@gmail.com';
 const ZONA      = 'Bahía Blanca y alrededores';
 
 const API_KEY = 'clave-de-prueba-cambiar';

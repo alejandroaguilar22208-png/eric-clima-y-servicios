@@ -106,11 +106,11 @@ namespace EricClima.Escritorio.Views
         private readonly ComboBox cboCliente = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
         private readonly ComboBox cboAgregar = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 330 };
         private readonly DateTimePicker dtpVence = new DateTimePicker { Format = DateTimePickerFormat.Short, ShowCheckBox = true, Checked = false };
-        private readonly DataGridView items = new DataGridView
+        private readonly DataGridView items = Ui.Estilo(new DataGridView
         {
-            Dock = DockStyle.Fill, AllowUserToAddRows = true, RowHeadersVisible = true,
-            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, BackgroundColor = Color.White
-        };
+            Dock = DockStyle.Fill, AllowUserToAddRows = true, RowHeadersVisible = true, RowHeadersWidth = 32,
+            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        });
         private readonly Label lblTotal = new Label { AutoSize = true, Font = new Font("Segoe UI", 12F, FontStyle.Bold), Margin = new Padding(16, 8, 4, 4) };
 
         public Presupuesto Creado { get; private set; }

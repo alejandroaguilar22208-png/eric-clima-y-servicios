@@ -32,3 +32,13 @@ El usuario de prueba está en `escritorio/GUIA.md`. Más detalles en `web/GUIA-W
 - Garantía de 12 meses calculada automáticamente.
 - Reportes de ingresos por mes y por servicio.
 - API REST de solo lectura para apps móviles.
+
+## Documentación
+
+| Archivo | Qué es |
+| --- | --- |
+| `docs/Documentacion-Escritorio.pdf` | Documentación completa del sistema de escritorio (PDF único, con índice vinculado). |
+| `escritorio/EricClima.Escritorio/Manual.pdf` | Manual de usuario con capturas; se abre desde el programa con F1. |
+| `docs/diagramas/*.drawio` | MER, modelo relacional y diagrama de clases (abrir con draw.io / diagrams.net). |
+| `docs/capturas/` | Capturas de pantalla del sistema. |
+

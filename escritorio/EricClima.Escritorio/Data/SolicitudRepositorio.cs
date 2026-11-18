@@ -35,6 +35,14 @@ namespace EricClima.Escritorio.Data
             cmd.ExecuteNonQuery();
         }
 
+        public bool Eliminar(int id)
+        {
+            using var cn = Conexion.Abrir();
+            using var cmd = new MySqlCommand("DELETE FROM solicitudes WHERE id = @id AND estado IN ('pendiente', 'contactado')", cn);
+            cmd.Parameters.AddWithValue("@id", id);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
         public int Convertir(Solicitud s)
         {
             using var cn = Conexion.Abrir();

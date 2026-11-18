@@ -40,7 +40,7 @@ function layout_inicio(string $titulo, string $activo = ''): void
                     </li>
                 <?php endforeach; ?>
             </ul>
-            <span class="navbar-text me-3 text-white"><i class="bi bi-person-circle"></i> <?= e($u['nombre']) ?> <small class="opacity-75">(<?= e($u['rol']) ?>)</small></span>
+            <a class="btn btn-sm <?= $activo === 'cuenta' ? 'btn-light' : 'btn-outline-light' ?> me-2" href="cuenta.php" title="Cambiar email y contraseña"><i class="bi bi-person-circle"></i> <?= e($u['nombre']) ?> <small class="opacity-75">(<?= e($u['rol']) ?>)</small> · Mi cuenta</a>
             <a class="btn btn-sm btn-outline-light me-2" href="../public/index.php" target="_blank"><i class="bi bi-globe2"></i> Ver sitio</a>
             <a class="btn btn-sm btn-acento" href="logout.php"><i class="bi bi-box-arrow-right"></i> Salir</a>
         </div>

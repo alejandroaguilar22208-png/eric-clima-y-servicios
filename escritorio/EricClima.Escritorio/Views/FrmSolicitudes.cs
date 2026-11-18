@@ -1,4 +1,4 @@
-using EricClima.Escritorio.Controllers;
+﻿using EricClima.Escritorio.Controllers;
 using EricClima.Escritorio.Models;
 
 namespace EricClima.Escritorio.Views
@@ -39,7 +39,7 @@ namespace EricClima.Escritorio.Views
             Controls.Add(Ui.Barra(DockStyle.Bottom,
                 Ui.Boton("Convertir en cliente + trabajo", Convertir, principal: true),
                 Ui.Boton("Contactado", (s, e) => Aplicar(controller.MarcarContactado)),
-                Ui.Boton("Descartar", (s, e) => Aplicar(controller.Descartar)),
+                Ui.Boton("Descartar", Descartar),
                 Ui.Boton("Actualizar", (s, e) => Cargar()),
                 Ui.Boton("Cerrar", (s, e) => Close())));
 
@@ -105,6 +105,15 @@ namespace EricClima.Escritorio.Views
             Resultado r = accion(s);
             Ui.Mostrar(r);
             if (r.Ok) Cargar();
+        }
+
+        private void Descartar(object sender, EventArgs e)
+        {
+            Solicitud s = Seleccionada();
+            if (s == null) { Ui.Aviso("Seleccioná una solicitud."); return; }
+            if (s.EstaCerrada()) { Ui.Aviso("Esa solicitud ya está cerrada."); return; }
+            if (!Ui.Confirmar($"¿Seguro que querés descartar la solicitud de {s.Nombre}?\n\nSe va a borrar y no va a aparecer más, ni acá ni en la web.")) return;
+            Aplicar(controller.Descartar);
         }
 
         private void Convertir(object sender, EventArgs e)

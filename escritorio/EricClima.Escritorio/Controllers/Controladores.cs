@@ -51,6 +51,33 @@ namespace EricClima.Escritorio.Controllers
         }
 
         public List<Usuario> Tecnicos() => repo.ListarActivos();
+
+        public Resultado CambiarCuenta(string nombre, string email, string claveActual, string claveNueva, string claveRepetir)
+        {
+            Usuario u = Sesion.UsuarioActual;
+            if (u == null) return Resultado.Error("Tenés que ingresar al sistema.");
+            nombre = (nombre ?? "").Trim();
+            email = (email ?? "").Trim();
+            claveNueva ??= "";
+            if (nombre.Length < 3) return Resultado.Error("Escribí tu nombre.");
+            if (!email.Contains('@') || !email.Contains('.') || email.Contains(' ')) return Resultado.Error("El email no es válido.");
+            if (string.IsNullOrEmpty(claveActual) || !u.VerificarClave(claveActual)) return Resultado.Error("La contraseña actual no es correcta.");
+            if (claveNueva != "" && claveNueva.Length < 8) return Resultado.Error("La contraseña nueva tiene que tener al menos 8 caracteres.");
+            if (claveNueva != (claveRepetir ?? "")) return Resultado.Error("La contraseña nueva y la repetición no coinciden.");
+            try
+            {
+                string hash = claveNueva == "" ? null : BCrypt.Net.BCrypt.HashPassword(claveNueva);
+                repo.ActualizarCuenta(u.Id, nombre, email, hash);
+                u.Nombre = nombre;
+                u.Email = email;
+                if (hash != null) u.PasswordHash = hash;
+                return Resultado.Bien(hash != null
+                    ? "Datos y contraseña actualizados. La próxima vez entrá con los datos nuevos (sirven también para la web)."
+                    : "Datos actualizados.");
+            }
+            catch (MySqlException ex) when (ex.Number == 1062) { return Resultado.Error("Ese email ya lo usa otro usuario."); }
+            catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
     }
 
     public class ClienteController
@@ -179,6 +206,18 @@ namespace EricClima.Escritorio.Controllers
             catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
         }
 
+        public Resultado Rechazar(Presupuesto p)
+        {
+            if (p.Estado != EstadoPresupuesto.Pendiente)
+                return Resultado.Error("Solo se puede rechazar un presupuesto pendiente.");
+            try
+            {
+                if (!repo.EliminarPendiente(p.Id)) return Resultado.Error("Ese presupuesto ya no está pendiente.");
+                return Resultado.Bien($"Presupuesto de {p.ClienteNombre} rechazado y borrado.");
+            }
+            catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
+
         public Resultado CambiarEstado(Presupuesto p, EstadoPresupuesto nuevo)
         {
             if (p.Estado != EstadoPresupuesto.Pendiente)
@@ -244,7 +283,16 @@ namespace EricClima.Escritorio.Controllers
         public int Pendientes() => repo.ContarPendientes();
 
         public Resultado MarcarContactado(Solicitud s) => Cambiar(s, EstadoSolicitud.Contactado, "Solicitud marcada como contactada.");
-        public Resultado Descartar(Solicitud s) => Cambiar(s, EstadoSolicitud.Descartada, "Solicitud descartada.");
+        public Resultado Descartar(Solicitud s)
+        {
+            if (s.EstaCerrada()) return Resultado.Error("Esa solicitud ya está cerrada.");
+            try
+            {
+                if (!repo.Eliminar(s.Id)) return Resultado.Error("Esa solicitud ya no se puede descartar.");
+                return Resultado.Bien($"Solicitud de {s.Nombre} descartada y borrada.");
+            }
+            catch (Exception ex) { return Resultado.DesdeExcepcion(ex); }
+        }
 
         private Resultado Cambiar(Solicitud s, EstadoSolicitud estado, string mensaje)
         {

@@ -54,6 +54,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($accion === 'estado' && ($_POST['estado'] ?? '') === 'rechazado') {
+        $id = (int)($_POST['id'] ?? 0);
+        $st = $db->prepare("DELETE FROM presupuestos WHERE id = ? AND estado = 'pendiente'");
+        $st->execute([$id]);
+        flash($st->rowCount() ? 'Presupuesto rechazado y borrado.' : 'Ese presupuesto ya no está pendiente.',
+              $st->rowCount() ? 'success' : 'warning');
+        redirigir('presupuestos.php');
+    }
+
     if ($accion === 'estado') {
         $nuevo = in_array($_POST['estado'] ?? '', ['aceptado', 'rechazado'], true) ? $_POST['estado'] : null;
         $id = (int)($_POST['id'] ?? 0);
@@ -190,7 +199,9 @@ layout_inicio('Presupuestos', 'presupuestos');
                             <form method="post" class="d-inline">
                                 <?= csrf_campo() ?><input type="hidden" name="accion" value="estado"><input type="hidden" name="id" value="<?= $p['id'] ?>">
                                 <button class="btn btn-sm btn-outline-success" name="estado" value="aceptado">Aceptado</button>
-                                <button class="btn btn-sm btn-outline-danger" name="estado" value="rechazado">Rechazado</button>
+                                <button class="btn btn-sm btn-outline-danger" name="estado" value="rechazado" onclick="return confirm(<?= e(json_encode('¿Seguro que querés rechazar el presupuesto N.º ' . str_pad($p['id'], 5, '0', STR_PAD_LEFT) . ' de ' . $p['cliente'] . "?
+
+Se va a borrar y no va a aparecer más, ni acá ni en el programa de escritorio.", JSON_UNESCAPED_UNICODE)) ?>)">Rechazado</button>
                             </form>
                         <?php endif; ?>
                     </td>

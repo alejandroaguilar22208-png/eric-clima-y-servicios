@@ -135,6 +135,11 @@ database/climagestion.sql               ← la base completa con datos de prueba
 - **Solicitudes web** (`FrmSolicitudes`, `SolicitudController`, `SolicitudRepositorio`): los pedidos del formulario de la página llegan solos; la ventana y el menú principal se refrescan cada 30 segundos con un `Timer`. *Convertir* crea el cliente y el trabajo dentro de una **transacción** (si algo falla, no queda nada a medias).
 - **Equipos en venta** (`FrmEquiposVenta`, `EquipoVentaController`, `EquipoVentaRepositorio`, modelo `EquipoVenta` con `Validar()`): lo que se carga acá se ve al instante en la sección *Equipos en venta* de la web. Solo el administrador modifica.
 
+## 7 ter. Cuenta, rechazos y descartes
+
+- **¿Cómo se cambia el email o la contraseña?** Con **Mi cuenta** (en el menú del escritorio y arriba a la derecha en el panel web). Pide la contraseña actual, y la nueva tiene que tener 8 caracteres o más. Se guarda cifrada con bcrypt y sirve para los dos sistemas.
+- **¿Qué pasa al rechazar un presupuesto o descartar una solicitud?** Pregunta "¿Seguro…?" con el nombre de la persona. Si se confirma, el registro se **borra** de la base (los ítems del presupuesto se van solos por `ON DELETE CASCADE`), así no se llenan las listas de rechazados.
+
 ## 8 bis. Instalarlo en otra computadora
 
 - **¿Funciona en una notebook?** Sí. Es una aplicación de escritorio de Windows: corre igual en una notebook que en una PC de escritorio, con Windows 10 u 11 de 64 bits.

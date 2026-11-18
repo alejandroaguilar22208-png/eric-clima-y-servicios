@@ -1,4 +1,4 @@
-using EricClima.Escritorio.Models;
+﻿using EricClima.Escritorio.Models;
 using MySqlConnector;
 
 namespace EricClima.Escritorio.Data
@@ -24,6 +24,19 @@ namespace EricClima.Escritorio.Data
             using var dr = cmd.ExecuteReader();
             while (dr.Read()) lista.Add(Mapear(dr));
             return lista;
+        }
+
+        public void ActualizarCuenta(int id, string nombre, string email, string nuevoHash)
+        {
+            using var cn = Conexion.Abrir();
+            using var cmd = new MySqlCommand(nuevoHash == null
+                ? "UPDATE usuarios SET nombre = @n, email = @e WHERE id = @id"
+                : "UPDATE usuarios SET nombre = @n, email = @e, password_hash = @h WHERE id = @id", cn);
+            cmd.Parameters.AddWithValue("@n", nombre.Trim());
+            cmd.Parameters.AddWithValue("@e", email.Trim());
+            if (nuevoHash != null) cmd.Parameters.AddWithValue("@h", nuevoHash);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
         }
 
         private static Usuario Mapear(MySqlDataReader dr) => new Usuario

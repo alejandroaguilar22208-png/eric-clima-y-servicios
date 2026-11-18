@@ -101,3 +101,8 @@ En `app/config.php`: `TELEFONO`, `WHATSAPP`, `EMAIL` (ahora tienen datos de prue
 - **¿Cómo funciona la calculadora de frigorías?** Con JavaScript: metros² × 2,6 m de alto × 50 frigorías (20 % más si le da el sol). Marca como *Recomendado* los equipos que alcanzan esa potencia.
 - **¿Qué pasa al tocar "Consultar"?** Completa el mensaje del formulario con la marca y el modelo, así el pedido llega al panel como una solicitud más.
 
+## 9. Cuenta y borrado de rechazados
+
+- **Mi cuenta** (`admin/cuenta.php`): cambia nombre, email y contraseña. Pide la contraseña actual y guarda la nueva con `password_hash()`. Sirve también para entrar al programa de escritorio.
+- **Rechazar un presupuesto o descartar una solicitud** pide confirmación con el nombre de la persona y después hace un `DELETE`, así desaparece de la web y del escritorio.
+

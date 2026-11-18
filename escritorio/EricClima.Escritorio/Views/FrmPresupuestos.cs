@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using EricClima.Escritorio.Controllers;
 using EricClima.Escritorio.Models;
 
@@ -21,7 +21,7 @@ namespace EricClima.Escritorio.Views
                 Ui.Boton("Nuevo", Nuevo, principal: true),
                 Ui.Boton("Ver PDF", Pdf),
                 Ui.Boton("Aceptado", (s, e) => Cambiar(EstadoPresupuesto.Aceptado)),
-                Ui.Boton("Rechazado", (s, e) => Cambiar(EstadoPresupuesto.Rechazado)),
+                Ui.Boton("Rechazado", (s, e) => Rechazar()),
                 Ui.Boton("Cerrar", (s, e) => Close())));
             KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) Close(); };
             Load += (s, e) => Cargar();
@@ -89,6 +89,16 @@ namespace EricClima.Escritorio.Views
             Resultado r = controller.ExportarPdf(p, dlg.FileName);
             if (!r.Ok) { Ui.Mostrar(r); return; }
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
+        }
+
+        private void Rechazar()
+        {
+            var p = Seleccionado();
+            if (p == null) return;
+            if (p.Estado != EstadoPresupuesto.Pendiente) { Ui.Aviso("Solo se puede rechazar un presupuesto pendiente."); return; }
+            if (!Ui.Confirmar($"¿Seguro que querés rechazar el presupuesto N.º {p.Id:00000} de {p.ClienteNombre}?\n\nSe va a borrar y no va a aparecer más, ni acá ni en la web.")) return;
+            Ui.Mostrar(controller.Rechazar(p));
+            Cargar();
         }
 
         private void Cambiar(EstadoPresupuesto estado)

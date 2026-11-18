@@ -17,7 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$sol) {
         flash('La solicitud no existe.', 'danger');
-    } elseif ($accion === 'contactado' || $accion === 'descartada') {
+    } elseif ($accion === 'descartada') {
+        $st = $db->prepare("DELETE FROM solicitudes WHERE id = ? AND estado IN ('pendiente', 'contactado')");
+        $st->execute([$id]);
+        flash($st->rowCount() ? 'Solicitud de ' . $sol['nombre'] . ' descartada y borrada.' : 'Esa solicitud ya no se puede descartar.',
+              $st->rowCount() ? 'success' : 'warning');
+    } elseif ($accion === 'contactado') {
         $db->prepare('UPDATE solicitudes SET estado = ? WHERE id = ?')->execute([$accion, $id]);
         flash('Solicitud actualizada.');
     } elseif ($accion === 'convertir') {
@@ -79,7 +84,9 @@ layout_inicio('Solicitudes desde la web', 'solicitudes');
                                 <?php if ($s['estado'] === 'pendiente'): ?>
                                     <button name="accion" value="contactado" class="btn btn-sm btn-outline-secondary">Contactado</button>
                                 <?php endif; ?>
-                                <button name="accion" value="descartada" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Descartar esta solicitud?')">Descartar</button>
+                                <button name="accion" value="descartada" class="btn btn-sm btn-outline-danger" onclick="return confirm(<?= e(json_encode('¿Seguro que querés descartar la solicitud de ' . $s['nombre'] . "?
+
+Se va a borrar y no va a aparecer más, ni acá ni en el programa de escritorio.", JSON_UNESCAPED_UNICODE)) ?>)">Descartar</button>
                             </form>
                         <?php endif; ?>
                     </td>

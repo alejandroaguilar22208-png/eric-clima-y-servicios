@@ -15,6 +15,7 @@ namespace EricClima.Escritorio.Views
             ItemHeight = 38, IntegralHeight = false
         };
         private readonly Label lblSolicitudes = Numero();
+        private Label lblHola;
         private readonly Label lblHoy = Numero();
         private readonly Label lblSinAgendar = Numero();
         private readonly Label lblStock = Numero();
@@ -42,6 +43,7 @@ namespace EricClima.Escritorio.Views
             menu.Controls.Add(ItemMenu("", "Presupuestos", () => Abrir(new FrmPresupuestos())));
             menu.Controls.Add(ItemMenu("", "Equipos en venta", () => Abrir(new FrmEquiposVenta())));
             menu.Controls.Add(new Panel { Width = 196, Height = 1, BackColor = Color.FromArgb(40, 70, 105), Margin = new Padding(12, 8, 12, 8) });
+            menu.Controls.Add(ItemMenu("", "Mi cuenta", () => { Abrir(new FrmMiCuenta()); ActualizarSaludo(); }));
             menu.Controls.Add(ItemMenu("", "Ayuda (F1)", AbrirAyuda));
             menu.Controls.Add(ItemMenu("", "Salir", Close));
 
@@ -51,7 +53,7 @@ namespace EricClima.Escritorio.Views
                 Text = $"{Sesion.UsuarioActual.Rol}  ·  " + DateTime.Today.ToString("dddd d 'de' MMMM 'de' yyyy"),
                 Dock = DockStyle.Top, Height = 24, ForeColor = Ui.TextoGris
             });
-            cabecera.Controls.Add(new Label
+            cabecera.Controls.Add(lblHola = new Label
             {
                 Text = $"¡Hola, {Sesion.UsuarioActual.Nombre}!", Dock = DockStyle.Top, Height = 38,
                 Font = new Font("Segoe UI", 17F, FontStyle.Bold), ForeColor = Ui.AzulOscuro
@@ -116,17 +118,17 @@ namespace EricClima.Escritorio.Views
 
         private Control ItemMenu(string icono, string texto, Action accion)
         {
-            var item = new Panel { Width = 220, Height = 48, Margin = new Padding(0, 2, 0, 2), Cursor = Cursors.Hand };
+            var item = new Panel { Width = 220, Height = 44, Margin = new Padding(0, 2, 0, 2), Cursor = Cursors.Hand };
             var marca = new Panel { Dock = DockStyle.Left, Width = 5, BackColor = Ui.AzulOscuro };
             var ico = new Label
             {
                 Text = icono, Font = new Font("Segoe MDL2 Assets", 14F), ForeColor = Color.White,
-                Location = new Point(24, 0), Size = new Size(32, 48), TextAlign = ContentAlignment.MiddleCenter
+                Location = new Point(24, 0), Size = new Size(32, 44), TextAlign = ContentAlignment.MiddleCenter
             };
             var lbl = new Label
             {
                 Text = texto, Font = new Font("Segoe UI Semibold", 11F), ForeColor = Color.FromArgb(220, 230, 242),
-                Location = new Point(62, 0), Size = new Size(150, 48), TextAlign = ContentAlignment.MiddleLeft
+                Location = new Point(62, 0), Size = new Size(150, 44), TextAlign = ContentAlignment.MiddleLeft
             };
             item.Controls.Add(ico);
             item.Controls.Add(lbl);
@@ -185,6 +187,8 @@ namespace EricClima.Escritorio.Views
             TextRenderer.DrawText(e.Graphics, texto, Ui.Fuente, area, Ui.AzulOscuro,
                 TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.EndEllipsis);
         }
+
+        private void ActualizarSaludo() => lblHola.Text = $"¡Hola, {Sesion.UsuarioActual.Nombre}!";
 
         private void Abrir(Form f)
         {

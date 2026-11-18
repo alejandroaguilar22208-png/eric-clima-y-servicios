@@ -1,4 +1,4 @@
-using EricClima.Escritorio.Models;
+﻿using EricClima.Escritorio.Models;
 using MySqlConnector;
 
 namespace EricClima.Escritorio.Data
@@ -79,6 +79,14 @@ namespace EricClima.Escritorio.Data
             cmd.Parameters.AddWithValue("@e", estado.ToString().ToLower());
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
+        }
+
+        public bool EliminarPendiente(int id)
+        {
+            using var cn = Conexion.Abrir();
+            using var cmd = new MySqlCommand("DELETE FROM presupuestos WHERE id = @id AND estado = 'pendiente'", cn);
+            cmd.Parameters.AddWithValue("@id", id);
+            return cmd.ExecuteNonQuery() > 0;
         }
 
         public void MarcarVencidos()

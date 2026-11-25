@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../app/config.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -29,7 +29,7 @@ $sql = 'SELECT t.id, t.estado, t.fecha_agendada, t.total, t.garantia_hasta, t.ob
      . ($estado ? ' WHERE t.estado = ?' : '')
      . ' ORDER BY t.fecha_agendada IS NULL, t.fecha_agendada';
 
-$st = db()->prepare($sql);
+$st = $pdo->prepare($sql);
 $st->execute($estado ? [$estado] : []);
 
 echo json_encode(['trabajos' => $st->fetchAll()], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

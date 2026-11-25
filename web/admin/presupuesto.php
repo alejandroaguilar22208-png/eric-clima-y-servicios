@@ -1,10 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../app/auth.php';
-requerir_login();
+require_once __DIR__ . '/../includes/funciones.php';
+requerirLogin();
 
 $id = (int)($_GET['id'] ?? 0);
-$st = db()->prepare(
+$st = $pdo->prepare(
     'SELECT p.*, c.nombre, c.direccion, c.telefono FROM presupuestos p
      JOIN clientes c ON c.id = p.cliente_id WHERE p.id = ?');
 $st->execute([$id]);
@@ -13,7 +13,7 @@ if (!$p) {
     flash('Ese presupuesto no existe.', 'warning');
     redirigir('presupuestos.php');
 }
-$st = db()->prepare('SELECT * FROM presupuesto_items WHERE presupuesto_id = ? ORDER BY id');
+$st = $pdo->prepare('SELECT * FROM presupuesto_items WHERE presupuesto_id = ? ORDER BY id');
 $st->execute([$id]);
 $items = $st->fetchAll();
 
@@ -26,7 +26,7 @@ $plata  = fn($n) => '$ ' . number_format((float)$n, 2, ',', '.');
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Presupuesto <?= $numero ?> - <?= e($p['nombre']) ?></title>
+    <title>Presupuesto <?= $numero ?> - <?= h($p['nombre']) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/estilos.css" rel="stylesheet">
     <style>
@@ -43,7 +43,7 @@ $plata  = fn($n) => '$ ' . number_format((float)$n, 2, ',', '.');
 </head>
 <body class="bg-light">
 <div class="container no-imprimir pt-3">
-    <?= mostrar_flash() ?>
+    <?= mostrarFlash() ?>
     <a class="btn btn-outline-secondary btn-sm" href="presupuestos.php">← Volver</a>
     <button class="btn btn-marca btn-sm" onclick="window.print()">Imprimir / Guardar PDF</button>
     <span class="text-muted small ms-2">En la ventana de impresión elegí <b>"Guardar como PDF"</b>.</span>
@@ -52,9 +52,9 @@ $plata  = fn($n) => '$ ' . number_format((float)$n, 2, ',', '.');
 <div class="hoja">
     <div class="d-flex justify-content-between">
         <div>
-            <div class="fs-3 fw-bold marca"><?= e(EMPRESA) ?></div>
+            <div class="fs-3 fw-bold marca"><?= h(EMPRESA) ?></div>
             <div class="text-muted">Instalación, reparación y mantenimiento de aires acondicionados</div>
-            <div class="text-muted"><?= e(ZONA) ?> · Tel. <?= e(TELEFONO) ?> · <?= e(EMAIL) ?></div>
+            <div class="text-muted"><?= h(ZONA) ?> · Tel. <?= h(TELEFONO) ?> · <?= h(EMAIL) ?></div>
         </div>
         <div class="text-end">
             <div class="fs-4 fw-bold">PRESUPUESTO</div>
@@ -66,9 +66,9 @@ $plata  = fn($n) => '$ ' . number_format((float)$n, 2, ',', '.');
 
     <div class="bg-body-tertiary p-3 my-4">
         <div class="fw-bold marca">Cliente</div>
-        <div><?= e($p['nombre']) ?></div>
-        <div>Dirección: <?= e($p['direccion']) ?></div>
-        <div>Teléfono: <?= e($p['telefono']) ?></div>
+        <div><?= h($p['nombre']) ?></div>
+        <div>Dirección: <?= h($p['direccion']) ?></div>
+        <div>Teléfono: <?= h($p['telefono']) ?></div>
     </div>
 
     <table class="table tabla-items">
@@ -76,7 +76,7 @@ $plata  = fn($n) => '$ ' . number_format((float)$n, 2, ',', '.');
         <tbody>
         <?php foreach ($items as $i): ?>
             <tr>
-                <td><?= e($i['descripcion']) ?></td>
+                <td><?= h($i['descripcion']) ?></td>
                 <td class="text-end"><?= rtrim(rtrim(number_format((float)$i['cantidad'], 2, ',', '.'), '0'), ',') ?></td>
                 <td class="text-end"><?= $plata($i['precio_unitario']) ?></td>
                 <td class="text-end"><?= $plata($i['cantidad'] * $i['precio_unitario']) ?></td>

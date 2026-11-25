@@ -149,6 +149,8 @@ section { scroll-margin-top: 80px; }
 .panel-menu .nav-link:hover { background: rgba(255, 255, 255, .12); color: #fff !important; }
 .panel-menu .nav-link.active { background: #fff; color: var(--marca) !important; font-weight: 600; }
 .panel-menu .nav-link i { margin-right: 4px; }
+.panel-menu .nav-link, .panel-menu .btn { white-space: nowrap; }
+@media (min-width: 1200px) and (max-width: 1500px) { .panel-menu .nav-link { padding: 8px 8px !important; font-size: .88rem; } .panel-menu .btn { padding: 4px 9px; } .panel-menu .navbar-brand small { display: none; } }
 .panel h1 { color: var(--marca-noche); font-weight: 700; }
 .panel .card { border: 0; border-radius: 16px; overflow: hidden; }
 .panel .table thead th { font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; color: var(--gris); }

@@ -1,0 +1,233 @@
+﻿namespace ClimaGestion.Vista
+{
+    partial class FrmClienteEditar
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Código generado por el Diseñador de Windows Forms
+
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            this.pnlEncabezado = new System.Windows.Forms.Panel();
+            this.lblTitulo = new System.Windows.Forms.Label();
+            this.pnlLinea = new System.Windows.Forms.Panel();
+            this.pnlDatos = new System.Windows.Forms.Panel();
+            this.lblNombre = new System.Windows.Forms.Label();
+            this.txtNombre = new System.Windows.Forms.TextBox();
+            this.lblTelefono = new System.Windows.Forms.Label();
+            this.txtTelefono = new System.Windows.Forms.TextBox();
+            this.lblEmail = new System.Windows.Forms.Label();
+            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.lblDireccion = new System.Windows.Forms.Label();
+            this.txtDireccion = new System.Windows.Forms.TextBox();
+            this.lblLocalidad = new System.Windows.Forms.Label();
+            this.txtLocalidad = new System.Windows.Forms.TextBox();
+            this.pnlBotones = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnGuardar = new System.Windows.Forms.Button();
+            this.btnCancelar = new System.Windows.Forms.Button();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.pnlEncabezado.SuspendLayout();
+            this.pnlLinea.SuspendLayout();
+            this.pnlDatos.SuspendLayout();
+            this.pnlBotones.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
+            this.SuspendLayout();
+            this.pnlEncabezado.Controls.Add(this.lblTitulo);
+            this.pnlEncabezado.Controls.Add(this.pnlLinea);
+            this.pnlEncabezado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
+            this.pnlEncabezado.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlEncabezado.Location = new System.Drawing.Point(0, 0);
+            this.pnlEncabezado.Size = new System.Drawing.Size(500, 58);
+            this.pnlEncabezado.TabIndex = 90;
+            this.pnlEncabezado.Name = "pnlEncabezado";
+            this.lblTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitulo.ForeColor = System.Drawing.Color.White;
+            this.lblTitulo.Image = global::ClimaGestion.Properties.Resources.logo_chico;
+            this.lblTitulo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTitulo.Location = new System.Drawing.Point(0, 0);
+            this.lblTitulo.Padding = new System.Windows.Forms.Padding(16, 0, 0, 0);
+            this.lblTitulo.Size = new System.Drawing.Size(500, 54);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "      Cliente";
+            this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTitulo.Name = "lblTitulo";
+            this.pnlLinea.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(122)))), ((int)(((byte)(26)))));
+            this.pnlLinea.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlLinea.Location = new System.Drawing.Point(0, 54);
+            this.pnlLinea.Size = new System.Drawing.Size(500, 4);
+            this.pnlLinea.TabIndex = 1;
+            this.pnlLinea.Name = "pnlLinea";
+            this.pnlDatos.Controls.Add(this.lblNombre);
+            this.pnlDatos.Controls.Add(this.txtNombre);
+            this.pnlDatos.Controls.Add(this.lblTelefono);
+            this.pnlDatos.Controls.Add(this.txtTelefono);
+            this.pnlDatos.Controls.Add(this.lblEmail);
+            this.pnlDatos.Controls.Add(this.txtEmail);
+            this.pnlDatos.Controls.Add(this.lblDireccion);
+            this.pnlDatos.Controls.Add(this.txtDireccion);
+            this.pnlDatos.Controls.Add(this.lblLocalidad);
+            this.pnlDatos.Controls.Add(this.txtLocalidad);
+            this.pnlDatos.BackColor = System.Drawing.Color.White;
+            this.pnlDatos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDatos.Size = new System.Drawing.Size(500, 330);
+            this.pnlDatos.TabIndex = 0;
+            this.pnlDatos.Name = "pnlDatos";
+            this.lblNombre.AutoSize = true;
+            this.lblNombre.Location = new System.Drawing.Point(24, 25);
+            this.lblNombre.Size = new System.Drawing.Size(64, 17);
+            this.lblNombre.TabIndex = 80;
+            this.lblNombre.Text = "Nombre *";
+            this.lblNombre.Name = "lblNombre";
+            this.txtNombre.Location = new System.Drawing.Point(180, 22);
+            this.txtNombre.Size = new System.Drawing.Size(290, 25);
+            this.txtNombre.TabIndex = 0;
+            this.txtNombre.Name = "txtNombre";
+            this.lblTelefono.AutoSize = true;
+            this.lblTelefono.Location = new System.Drawing.Point(24, 63);
+            this.lblTelefono.Size = new System.Drawing.Size(80, 17);
+            this.lblTelefono.TabIndex = 80;
+            this.lblTelefono.Text = "Teléfono *";
+            this.lblTelefono.Name = "lblTelefono";
+            this.txtTelefono.Location = new System.Drawing.Point(180, 60);
+            this.txtTelefono.Size = new System.Drawing.Size(290, 25);
+            this.txtTelefono.TabIndex = 1;
+            this.txtTelefono.Name = "txtTelefono";
+            this.lblEmail.AutoSize = true;
+            this.lblEmail.Location = new System.Drawing.Point(24, 101);
+            this.lblEmail.Size = new System.Drawing.Size(40, 17);
+            this.lblEmail.TabIndex = 80;
+            this.lblEmail.Text = "Email";
+            this.lblEmail.Name = "lblEmail";
+            this.txtEmail.Location = new System.Drawing.Point(180, 98);
+            this.txtEmail.Size = new System.Drawing.Size(290, 25);
+            this.txtEmail.TabIndex = 2;
+            this.txtEmail.Name = "txtEmail";
+            this.lblDireccion.AutoSize = true;
+            this.lblDireccion.Location = new System.Drawing.Point(24, 139);
+            this.lblDireccion.Size = new System.Drawing.Size(88, 17);
+            this.lblDireccion.TabIndex = 80;
+            this.lblDireccion.Text = "Dirección *";
+            this.lblDireccion.Name = "lblDireccion";
+            this.txtDireccion.Location = new System.Drawing.Point(180, 136);
+            this.txtDireccion.Size = new System.Drawing.Size(290, 25);
+            this.txtDireccion.TabIndex = 3;
+            this.txtDireccion.Name = "txtDireccion";
+            this.lblLocalidad.AutoSize = true;
+            this.lblLocalidad.Location = new System.Drawing.Point(24, 177);
+            this.lblLocalidad.Size = new System.Drawing.Size(72, 17);
+            this.lblLocalidad.TabIndex = 80;
+            this.lblLocalidad.Text = "Localidad";
+            this.lblLocalidad.Name = "lblLocalidad";
+            this.txtLocalidad.Location = new System.Drawing.Point(180, 174);
+            this.txtLocalidad.Size = new System.Drawing.Size(290, 25);
+            this.txtLocalidad.TabIndex = 4;
+            this.txtLocalidad.Name = "txtLocalidad";
+            this.pnlBotones.Controls.Add(this.btnGuardar);
+            this.pnlBotones.Controls.Add(this.btnCancelar);
+            this.pnlBotones.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
+            this.pnlBotones.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBotones.Padding = new System.Windows.Forms.Padding(10, 8, 10, 8);
+            this.pnlBotones.Size = new System.Drawing.Size(500, 62);
+            this.pnlBotones.TabIndex = 70;
+            this.pnlBotones.Name = "pnlBotones";
+            this.btnGuardar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(122)))), ((int)(((byte)(26)))));
+            this.btnGuardar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnGuardar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnGuardar.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(122)))), ((int)(((byte)(26)))));
+            this.btnGuardar.FlatAppearance.BorderSize = 0;
+            this.btnGuardar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnGuardar.ForeColor = System.Drawing.Color.White;
+            this.btnGuardar.Image = global::ClimaGestion.Properties.Resources.guardar_blanco;
+            this.btnGuardar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnGuardar.Margin = new System.Windows.Forms.Padding(4);
+            this.btnGuardar.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            this.btnGuardar.Size = new System.Drawing.Size(112, 38);
+            this.btnGuardar.TabIndex = 5;
+            this.btnGuardar.Text = "Guardar";
+            this.btnGuardar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnGuardar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnGuardar.UseVisualStyleBackColor = false;
+            this.btnGuardar.Name = "btnGuardar";
+            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+            this.btnCancelar.BackColor = System.Drawing.Color.White;
+            this.btnCancelar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancelar.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(92)))), ((int)(((byte)(175)))));
+            this.btnCancelar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCancelar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(92)))), ((int)(((byte)(175)))));
+            this.btnCancelar.Image = global::ClimaGestion.Properties.Resources.cerrar;
+            this.btnCancelar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnCancelar.Margin = new System.Windows.Forms.Padding(4);
+            this.btnCancelar.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            this.btnCancelar.Size = new System.Drawing.Size(116, 38);
+            this.btnCancelar.TabIndex = 6;
+            this.btnCancelar.Text = "Cancelar";
+            this.btnCancelar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnCancelar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnCancelar.UseVisualStyleBackColor = false;
+            this.btnCancelar.Name = "btnCancelar";
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
+            this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            this.errorProvider.ContainerControl = this;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(500, 330);
+            this.Controls.Add(this.pnlDatos);
+            this.Controls.Add(this.pnlBotones);
+            this.Controls.Add(this.pnlEncabezado);
+            this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Icon = global::ClimaGestion.Properties.Resources.climagestion;
+            this.KeyPreview = true;
+            this.Name = "FrmClienteEditar";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Cliente - Eric Clima y Servicios";
+            this.Load += new System.EventHandler(this.FrmClienteEditar_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
+            this.pnlEncabezado.ResumeLayout(false);
+            this.pnlEncabezado.PerformLayout();
+            this.pnlLinea.ResumeLayout(false);
+            this.pnlDatos.ResumeLayout(false);
+            this.pnlDatos.PerformLayout();
+            this.pnlBotones.ResumeLayout(false);
+            this.pnlBotones.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Panel pnlEncabezado;
+        private System.Windows.Forms.Label lblTitulo;
+        private System.Windows.Forms.Panel pnlLinea;
+        private System.Windows.Forms.Panel pnlDatos;
+        private System.Windows.Forms.Label lblNombre;
+        private System.Windows.Forms.TextBox txtNombre;
+        private System.Windows.Forms.Label lblTelefono;
+        private System.Windows.Forms.TextBox txtTelefono;
+        private System.Windows.Forms.Label lblEmail;
+        private System.Windows.Forms.TextBox txtEmail;
+        private System.Windows.Forms.Label lblDireccion;
+        private System.Windows.Forms.TextBox txtDireccion;
+        private System.Windows.Forms.Label lblLocalidad;
+        private System.Windows.Forms.TextBox txtLocalidad;
+        private System.Windows.Forms.FlowLayoutPanel pnlBotones;
+        private System.Windows.Forms.Button btnGuardar;
+        private System.Windows.Forms.Button btnCancelar;
+        private System.Windows.Forms.ErrorProvider errorProvider;
+    }
+}

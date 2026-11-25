@@ -1,13 +1,11 @@
 <?php
-require_once __DIR__ . '/../app/auth.php';
-require_once __DIR__ . '/../app/layout.php';
-requerir_login();
+require_once __DIR__ . '/../includes/funciones.php';
+requerirLogin();
 
-$db = db();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_verificar();
-    if (!es_admin()) {
+    verificarCsrf();
+    if (!esAdmin()) {
         flash('Solo el administrador puede modificar el stock.', 'warning');
         redirigir('materiales.php');
     }
@@ -25,39 +23,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $params = [$m['nombre'], $m['unidad'], $m['actual'], $m['minimo'], $m['precio']];
             if ($m['id']) {
-                $db->prepare('UPDATE materiales SET nombre=?, unidad=?, stock_actual=?, stock_minimo=?, precio=? WHERE id=?')
+                $pdo->prepare('UPDATE materiales SET nombre=?, unidad=?, stock_actual=?, stock_minimo=?, precio=? WHERE id=?')
                    ->execute([...$params, $m['id']]);
                 flash('Material actualizado.');
             } else {
-                $db->prepare('INSERT INTO materiales (nombre, unidad, stock_actual, stock_minimo, precio) VALUES (?, ?, ?, ?, ?)')
+                $pdo->prepare('INSERT INTO materiales (nombre, unidad, stock_actual, stock_minimo, precio) VALUES (?, ?, ?, ?, ?)')
                    ->execute($params);
                 flash('Material agregado.');
             }
         } catch (PDOException $ex) {
-            flash(mensaje_error($ex), 'danger');
+            flash(mensajeError($ex), 'danger');
         }
     }
     redirigir('materiales.php');
 }
 
-$materiales = $db->query('SELECT * FROM materiales ORDER BY stock_actual <= stock_minimo DESC, nombre')->fetchAll();
+$materiales = $pdo->query('SELECT * FROM materiales ORDER BY stock_actual <= stock_minimo DESC, nombre')->fetchAll();
 $editar = (int)($_GET['editar'] ?? 0);
 
-layout_inicio('Stock de materiales', 'materiales');
+$titulo = 'Stock de materiales';
+$activo = 'materiales';
+require __DIR__ . '/../includes/header.php';
 ?>
 <p class="text-muted">Las filas en rojo tienen stock igual o menor al mínimo. El stock baja solo cuando un trabajo se marca como realizado.</p>
 
 <div class="card shadow-sm">
     <div class="table-responsive">
         <table class="table align-middle mb-0">
-            <thead class="table-light"><tr><th>Material</th><th>Unidad</th><th>Stock</th><th>Mínimo</th><th>Precio</th><?= es_admin() ? '<th></th>' : '' ?></tr></thead>
+            <thead class="table-light"><tr><th>Material</th><th>Unidad</th><th>Stock</th><th>Mínimo</th><th>Precio</th><?= esAdmin() ? '<th></th>' : '' ?></tr></thead>
             <tbody>
             <?php foreach ($materiales as $m): ?>
-                <?php if (es_admin() && $editar === (int)$m['id']): ?>
+                <?php if (esAdmin() && $editar === (int)$m['id']): ?>
                     <tr><td colspan="6">
                         <form method="post" class="row g-2 align-items-center">
-                            <?= csrf_campo() ?><input type="hidden" name="id" value="<?= $m['id'] ?>">
-                            <div class="col-md-3"><input class="form-control form-control-sm" name="nombre" value="<?= e($m['nombre']) ?>"></div>
+                            <?= campoCsrf() ?><input type="hidden" name="id" value="<?= $m['id'] ?>">
+                            <div class="col-md-3"><input class="form-control form-control-sm" name="nombre" value="<?= h($m['nombre']) ?>"></div>
                             <div class="col-md-2"><select class="form-select form-select-sm" name="unidad">
                                 <?php foreach (['unidad', 'm', 'kg'] as $u): ?><option <?= $m['unidad'] === $u ? 'selected' : '' ?>><?= $u ?></option><?php endforeach; ?>
                             </select></div>
@@ -69,12 +69,12 @@ layout_inicio('Stock de materiales', 'materiales');
                     </td></tr>
                 <?php else: ?>
                     <tr class="<?= $m['stock_actual'] <= $m['stock_minimo'] ? 'fila-stock-bajo' : '' ?>">
-                        <td><?= e($m['nombre']) ?></td>
-                        <td><?= e($m['unidad']) ?></td>
+                        <td><?= h($m['nombre']) ?></td>
+                        <td><?= h($m['unidad']) ?></td>
                         <td><?= (float)$m['stock_actual'] ?></td>
                         <td><?= (float)$m['stock_minimo'] ?></td>
                         <td><?= pesos($m['precio']) ?></td>
-                        <?php if (es_admin()): ?><td class="text-end"><a class="btn btn-sm btn-outline-primary" href="materiales.php?editar=<?= $m['id'] ?>">Editar</a></td><?php endif; ?>
+                        <?php if (esAdmin()): ?><td class="text-end"><a class="btn btn-sm btn-outline-primary" href="materiales.php?editar=<?= $m['id'] ?>">Editar</a></td><?php endif; ?>
                     </tr>
                 <?php endif; ?>
             <?php endforeach; ?>
@@ -83,10 +83,10 @@ layout_inicio('Stock de materiales', 'materiales');
     </div>
 </div>
 
-<?php if (es_admin()): ?>
+<?php if (esAdmin()): ?>
     <form method="post" class="card card-body shadow-sm mt-4">
         <h2 class="h6">Agregar material</h2>
-        <?= csrf_campo() ?>
+        <?= campoCsrf() ?>
         <div class="row g-2">
             <div class="col-md-3"><input class="form-control" name="nombre" placeholder="Nombre *" required></div>
             <div class="col-md-2"><select class="form-select" name="unidad"><option>unidad</option><option>m</option><option>kg</option></select></div>
@@ -97,4 +97,4 @@ layout_inicio('Stock de materiales', 'materiales');
         </div>
     </form>
 <?php endif; ?>
-<?php layout_fin();
+<?php require __DIR__ . '/../includes/footer.php';

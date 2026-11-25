@@ -1,14 +1,12 @@
 <?php
 
-require_once __DIR__ . '/../app/auth.php';
-require_once __DIR__ . '/../app/layout.php';
-requerir_login();
+require_once __DIR__ . '/../includes/funciones.php';
+requerirLogin();
 
-$db = db();
 $errores = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_verificar();
+    verificarCsrf();
     $accion = $_POST['accion'] ?? '';
 
     if ($accion === 'guardar') {
@@ -28,11 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$errores) {
             $params = [$c['nombre'], $c['telefono'], $c['email'] ?: null, $c['direccion'], $c['localidad']];
             if ($c['id']) {
-                $db->prepare('UPDATE clientes SET nombre=?, telefono=?, email=?, direccion=?, localidad=? WHERE id=?')
+                $pdo->prepare('UPDATE clientes SET nombre=?, telefono=?, email=?, direccion=?, localidad=? WHERE id=?')
                    ->execute([...$params, $c['id']]);
                 flash('Cliente modificado.');
             } else {
-                $db->prepare('INSERT INTO clientes (nombre, telefono, email, direccion, localidad) VALUES (?, ?, ?, ?, ?)')
+                $pdo->prepare('INSERT INTO clientes (nombre, telefono, email, direccion, localidad) VALUES (?, ?, ?, ?, ?)')
                    ->execute($params);
                 flash('Cliente agregado.');
             }
@@ -40,10 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $editando = $c;
     } elseif ($accion === 'baja') {
-        if (!es_admin()) {
+        if (!esAdmin()) {
             flash('Solo el administrador puede dar de baja clientes.', 'warning');
         } else {
-            $db->prepare('UPDATE clientes SET activo = 0 WHERE id = ?')->execute([(int)$_POST['id']]);
+            $pdo->prepare('UPDATE clientes SET activo = 0 WHERE id = ?')->execute([(int)$_POST['id']]);
             flash('Cliente dado de baja. Su historial se conserva.');
         }
         redirigir('clientes.php');
@@ -54,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($marca === '' || $frigorias <= 0) {
             flash('Completá marca y frigorías del equipo.', 'warning');
         } else {
-            $db->prepare('INSERT INTO equipos (cliente_id, marca, modelo, frigorias, tipo, ubicacion) VALUES (?, ?, ?, ?, ?, ?)')
+            $pdo->prepare('INSERT INTO equipos (cliente_id, marca, modelo, frigorias, tipo, ubicacion) VALUES (?, ?, ?, ?, ?, ?)')
                ->execute([$clienteId, $marca, trim($_POST['modelo'] ?? '') ?: null, $frigorias, $_POST['tipo'] ?? 'split', trim($_POST['ubicacion'] ?? '') ?: null]);
             flash('Equipo agregado.');
         }
@@ -66,7 +64,7 @@ if (!isset($editando)) {
     if (isset($_GET['nuevo'])) {
         $editando = ['id' => 0, 'nombre' => '', 'telefono' => '', 'email' => '', 'direccion' => '', 'localidad' => 'Bahía Blanca'];
     } elseif (isset($_GET['editar'])) {
-        $st = $db->prepare('SELECT * FROM clientes WHERE id = ? AND activo = 1');
+        $st = $pdo->prepare('SELECT * FROM clientes WHERE id = ? AND activo = 1');
         $st->execute([(int)$_GET['editar']]);
         $editando = $st->fetch() ?: null;
     }
@@ -74,14 +72,14 @@ if (!isset($editando)) {
 
 $ficha = null;
 if (isset($_GET['ver'])) {
-    $st = $db->prepare('SELECT * FROM clientes WHERE id = ?');
+    $st = $pdo->prepare('SELECT * FROM clientes WHERE id = ?');
     $st->execute([(int)$_GET['ver']]);
     $ficha = $st->fetch();
     if ($ficha) {
-        $st = $db->prepare('SELECT * FROM equipos WHERE cliente_id = ? ORDER BY id');
+        $st = $pdo->prepare('SELECT * FROM equipos WHERE cliente_id = ? ORDER BY id');
         $st->execute([$ficha['id']]);
         $equipos = $st->fetchAll();
-        $st = $db->prepare(
+        $st = $pdo->prepare(
             'SELECT t.*, s.nombre AS servicio FROM trabajos t JOIN servicios s ON s.id = t.servicio_id
              WHERE t.cliente_id = ? ORDER BY t.id DESC'
         );
@@ -91,7 +89,7 @@ if (isset($_GET['ver'])) {
 }
 
 $q = trim($_GET['q'] ?? '');
-$st = $db->prepare(
+$st = $pdo->prepare(
     'SELECT c.*, (SELECT COUNT(*) FROM equipos e WHERE e.cliente_id = c.id) AS equipos
      FROM clientes c WHERE c.activo = 1 AND (c.nombre LIKE ? OR c.telefono LIKE ? OR c.direccion LIKE ? OR c.localidad LIKE ?)
      ORDER BY c.nombre'
@@ -103,18 +101,20 @@ function campo(string $nombre, string $etiqueta, array $datos, array $errores, s
 {
     $inv = isset($errores[$nombre]) ? ' is-invalid' : '';
     return '<div class="col-md-6"><label class="form-label">' . $etiqueta . '</label>'
-         . '<input class="form-control' . $inv . '" type="' . $tipo . '" name="' . $nombre . '" value="' . e($datos[$nombre] ?? '') . '">'
-         . ($inv ? '<div class="invalid-feedback">' . e($errores[$nombre]) . '</div>' : '') . '</div>';
+         . '<input class="form-control' . $inv . '" type="' . $tipo . '" name="' . $nombre . '" value="' . h($datos[$nombre] ?? '') . '">'
+         . ($inv ? '<div class="invalid-feedback">' . h($errores[$nombre]) . '</div>' : '') . '</div>';
 }
 
-layout_inicio('Clientes', 'clientes');
+$titulo = 'Clientes';
+$activo = 'clientes';
+require __DIR__ . '/../includes/header.php';
 ?>
 
 <?php if (!empty($editando)): ?>
     <div class="card shadow-sm mb-4">
         <div class="card-header fw-semibold"><?= $editando['id'] ? 'Editar cliente' : 'Nuevo cliente' ?></div>
         <form method="post" class="card-body" novalidate>
-            <?= csrf_campo() ?>
+            <?= campoCsrf() ?>
             <input type="hidden" name="accion" value="guardar">
             <input type="hidden" name="id" value="<?= (int)$editando['id'] ?>">
             <div class="row g-3">
@@ -135,22 +135,22 @@ layout_inicio('Clientes', 'clientes');
 <?php if ($ficha): ?>
     <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <span class="fw-semibold"><?= e($ficha['nombre']) ?></span>
+            <span class="fw-semibold"><?= h($ficha['nombre']) ?></span>
             <a href="clientes.php" class="btn-close" aria-label="Cerrar"></a>
         </div>
         <div class="card-body">
-            <p class="mb-3"><?= e($ficha['telefono']) ?> · <?= e($ficha['direccion']) ?>, <?= e($ficha['localidad']) ?> <?= $ficha['email'] ? '· ' . e($ficha['email']) : '' ?></p>
+            <p class="mb-3"><?= h($ficha['telefono']) ?> · <?= h($ficha['direccion']) ?>, <?= h($ficha['localidad']) ?> <?= $ficha['email'] ? '· ' . h($ficha['email']) : '' ?></p>
             <div class="row g-4">
                 <div class="col-lg-6">
                     <h2 class="h6">Equipos instalados</h2>
                     <ul class="list-group mb-3">
                         <?php foreach ($equipos as $eq): ?>
-                            <li class="list-group-item"><?= e($eq['marca']) ?> <?= e($eq['modelo']) ?> · <?= (int)$eq['frigorias'] ?> fg · <?= e($eq['tipo']) ?> <?= $eq['ubicacion'] ? '· ' . e($eq['ubicacion']) : '' ?></li>
+                            <li class="list-group-item"><?= h($eq['marca']) ?> <?= h($eq['modelo']) ?> · <?= (int)$eq['frigorias'] ?> fg · <?= h($eq['tipo']) ?> <?= $eq['ubicacion'] ? '· ' . h($eq['ubicacion']) : '' ?></li>
                         <?php endforeach; ?>
                         <?php if (!$equipos): ?><li class="list-group-item text-muted">Sin equipos cargados.</li><?php endif; ?>
                     </ul>
                     <form method="post" class="row g-2">
-                        <?= csrf_campo() ?>
+                        <?= campoCsrf() ?>
                         <input type="hidden" name="accion" value="equipo">
                         <input type="hidden" name="cliente_id" value="<?= $ficha['id'] ?>">
                         <div class="col-6"><input class="form-control form-control-sm" name="marca" placeholder="Marca *"></div>
@@ -168,8 +168,8 @@ layout_inicio('Clientes', 'clientes');
                     <ul class="list-group">
                         <?php foreach ($historial as $t): ?>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span>N.º <?= $t['id'] ?> · <?= e($t['servicio']) ?> <?= $t['garantia_hasta'] ? '<small class="text-muted">· garantía hasta ' . date('d/m/Y', strtotime($t['garantia_hasta'])) . '</small>' : '' ?></span>
-                                <?= badge_estado($t['estado']) ?>
+                                <span>N.º <?= $t['id'] ?> · <?= h($t['servicio']) ?> <?= $t['garantia_hasta'] ? '<small class="text-muted">· garantía hasta ' . date('d/m/Y', strtotime($t['garantia_hasta'])) . '</small>' : '' ?></span>
+                                <?= badgeEstado($t['estado']) ?>
                             </li>
                         <?php endforeach; ?>
                         <?php if (!$historial): ?><li class="list-group-item text-muted">Sin trabajos.</li><?php endif; ?>
@@ -182,7 +182,7 @@ layout_inicio('Clientes', 'clientes');
 
 <div class="d-flex flex-wrap gap-2 mb-3">
     <form class="d-flex gap-2 flex-grow-1" method="get">
-        <input class="form-control" name="q" value="<?= e($q) ?>" placeholder="Buscar por nombre, teléfono, dirección o localidad">
+        <input class="form-control" name="q" value="<?= h($q) ?>" placeholder="Buscar por nombre, teléfono, dirección o localidad">
         <button class="btn btn-outline-secondary">Buscar</button>
     </form>
     <a href="clientes.php?nuevo=1" class="btn btn-marca">+ Nuevo cliente</a>
@@ -195,15 +195,15 @@ layout_inicio('Clientes', 'clientes');
             <tbody>
             <?php foreach ($clientes as $c): ?>
                 <tr>
-                    <td><a href="clientes.php?ver=<?= $c['id'] ?>"><?= e($c['nombre']) ?></a></td>
-                    <td><?= e($c['telefono']) ?></td>
-                    <td><?= e($c['direccion']) ?>, <?= e($c['localidad']) ?></td>
+                    <td><a href="clientes.php?ver=<?= $c['id'] ?>"><?= h($c['nombre']) ?></a></td>
+                    <td><?= h($c['telefono']) ?></td>
+                    <td><?= h($c['direccion']) ?>, <?= h($c['localidad']) ?></td>
                     <td><?= (int)$c['equipos'] ?></td>
                     <td class="text-end text-nowrap">
                         <a class="btn btn-sm btn-outline-primary" href="clientes.php?editar=<?= $c['id'] ?>">Editar</a>
-                        <?php if (es_admin()): ?>
+                        <?php if (esAdmin()): ?>
                             <form method="post" class="d-inline" onsubmit="return confirm('¿Dar de baja a este cliente? Su historial se conserva.')">
-                                <?= csrf_campo() ?><input type="hidden" name="accion" value="baja"><input type="hidden" name="id" value="<?= $c['id'] ?>">
+                                <?= campoCsrf() ?><input type="hidden" name="accion" value="baja"><input type="hidden" name="id" value="<?= $c['id'] ?>">
                                 <button class="btn btn-sm btn-outline-danger">Dar de baja</button>
                             </form>
                         <?php endif; ?>
@@ -215,4 +215,4 @@ layout_inicio('Clientes', 'clientes');
         </table>
     </div>
 </div>
-<?php layout_fin();
+<?php require __DIR__ . '/../includes/footer.php';

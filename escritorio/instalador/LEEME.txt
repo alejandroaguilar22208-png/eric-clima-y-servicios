@@ -2,7 +2,7 @@
 =====================================
 
 Funciona en cualquier computadora con Windows 10 u 11 de 64 bits, sea notebook o de escritorio.
-No hace falta instalar .NET ni Visual Studio: el programa ya los trae adentro.
+Necesita .NET Framework 4.8, que ya viene incluido en Windows 10 y 11.
 
 ANTES DE USARLO: la base de datos
 ---------------------------------
@@ -16,7 +16,7 @@ El programa guarda todo en una base de datos MariaDB / MySQL. Hay dos formas de 
 
 2) La base en otra computadora de la red (por ejemplo, la del negocio)
    - En el menú Inicio, abrir "ClimaGestión > Configurar conexión a la base".
-   - Cambiar "localhost" por la IP de la computadora que tiene la base (por ejemplo 192.168.0.10).
+   - En la línea "connectionString" cambiar "server=localhost" por la IP de la computadora que tiene la base (por ejemplo 192.168.0.10).
    - Guardar y volver a abrir el programa.
 
 AYUDA

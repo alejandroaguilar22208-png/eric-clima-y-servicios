@@ -1,20 +1,18 @@
 <?php
-require_once __DIR__ . '/../app/auth.php';
-require_once __DIR__ . '/../app/layout.php';
-requerir_login();
+require_once __DIR__ . '/../includes/funciones.php';
+requerirLogin();
 
-$db = db();
-$u = usuario_actual();
+$u = usuarioActual();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_verificar();
+    verificarCsrf();
     $nombre = trim($_POST['nombre'] ?? '');
     $email  = trim($_POST['email'] ?? '');
     $actual = $_POST['clave_actual'] ?? '';
     $nueva  = $_POST['clave_nueva'] ?? '';
     $repite = $_POST['clave_repetir'] ?? '';
 
-    $st = $db->prepare('SELECT password_hash FROM usuarios WHERE id = ?');
+    $st = $pdo->prepare('SELECT password_hash FROM usuarios WHERE id = ?');
     $st->execute([$u['id']]);
     $hash = $st->fetchColumn();
 
@@ -32,38 +30,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($nueva !== '') {
-            $db->prepare('UPDATE usuarios SET nombre = ?, email = ?, password_hash = ? WHERE id = ?')
+            $pdo->prepare('UPDATE usuarios SET nombre = ?, email = ?, password_hash = ? WHERE id = ?')
                ->execute([$nombre, $email, password_hash($nueva, PASSWORD_BCRYPT), $u['id']]);
         } else {
-            $db->prepare('UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?')
+            $pdo->prepare('UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?')
                ->execute([$nombre, $email, $u['id']]);
         }
         $_SESSION['usuario']['nombre'] = $nombre;
         $_SESSION['usuario']['email'] = $email;
         flash($nueva !== '' ? 'Datos y contraseña actualizados. La próxima vez entrá con los datos nuevos.' : 'Datos actualizados.');
     } catch (PDOException $ex) {
-        flash(($ex->errorInfo[1] ?? 0) == 1062 ? 'Ese email ya lo usa otro usuario.' : mensaje_error($ex), 'danger');
+        flash(($ex->errorInfo[1] ?? 0) == 1062 ? 'Ese email ya lo usa otro usuario.' : mensajeError($ex), 'danger');
     }
     redirigir('cuenta.php');
 }
 
-$u = usuario_actual();
-layout_inicio('Mi cuenta', 'cuenta');
+$u = usuarioActual();
+$titulo = 'Mi cuenta';
+$activo = 'cuenta';
+require __DIR__ . '/../includes/header.php';
 ?>
 <div class="row">
     <div class="col-lg-7">
         <form method="post" class="card card-body shadow-sm" autocomplete="off">
-            <?= csrf_campo() ?>
+            <?= campoCsrf() ?>
             <h2 class="h5"><i class="bi bi-person-circle text-marca"></i> Tus datos</h2>
             <p class="text-muted small">Con este email y contraseña entrás al panel web y al programa de escritorio.</p>
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label" for="nombre">Nombre</label>
-                    <input class="form-control" id="nombre" name="nombre" maxlength="100" required value="<?= e($u['nombre']) ?>">
+                    <input class="form-control" id="nombre" name="nombre" maxlength="100" required value="<?= h($u['nombre']) ?>">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="email">Email (usuario para entrar)</label>
-                    <input class="form-control" id="email" name="email" type="email" maxlength="120" required value="<?= e($u['email']) ?>">
+                    <input class="form-control" id="email" name="email" type="email" maxlength="120" required value="<?= h($u['email']) ?>">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="clave_nueva">Contraseña nueva</label>
@@ -87,4 +87,4 @@ layout_inicio('Mi cuenta', 'cuenta');
         </form>
     </div>
 </div>
-<?php layout_fin();
+<?php require __DIR__ . '/../includes/footer.php';

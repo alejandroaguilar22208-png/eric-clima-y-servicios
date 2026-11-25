@@ -1,65 +1,65 @@
 <?php
 
-require_once __DIR__ . '/../app/auth.php';
-require_once __DIR__ . '/../app/layout.php';
-requerir_login();
+require_once __DIR__ . '/../includes/funciones.php';
+requerirLogin();
 
-$db = db();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_verificar();
+    verificarCsrf();
     $id = (int)($_POST['id'] ?? 0);
     $accion = $_POST['accion'] ?? '';
 
-    $st = $db->prepare('SELECT * FROM solicitudes WHERE id = ?');
+    $st = $pdo->prepare('SELECT * FROM solicitudes WHERE id = ?');
     $st->execute([$id]);
     $sol = $st->fetch();
 
     if (!$sol) {
         flash('La solicitud no existe.', 'danger');
     } elseif ($accion === 'descartada') {
-        $st = $db->prepare("DELETE FROM solicitudes WHERE id = ? AND estado IN ('pendiente', 'contactado')");
+        $st = $pdo->prepare("DELETE FROM solicitudes WHERE id = ? AND estado IN ('pendiente', 'contactado')");
         $st->execute([$id]);
         flash($st->rowCount() ? 'Solicitud de ' . $sol['nombre'] . ' descartada y borrada.' : 'Esa solicitud ya no se puede descartar.',
               $st->rowCount() ? 'success' : 'warning');
     } elseif ($accion === 'contactado') {
-        $db->prepare('UPDATE solicitudes SET estado = ? WHERE id = ?')->execute([$accion, $id]);
+        $pdo->prepare('UPDATE solicitudes SET estado = ? WHERE id = ?')->execute([$accion, $id]);
         flash('Solicitud actualizada.');
     } elseif ($accion === 'convertir') {
         if ($sol['estado'] === 'convertida') {
             flash('Esa solicitud ya fue convertida.', 'warning');
         } else {
             try {
-                $db->beginTransaction();
-                $db->prepare('INSERT INTO clientes (nombre, telefono, direccion) VALUES (?, ?, ?)')
+                $pdo->beginTransaction();
+                $pdo->prepare('INSERT INTO clientes (nombre, telefono, direccion) VALUES (?, ?, ?)')
                    ->execute([$sol['nombre'], $sol['telefono'], $sol['direccion'] ?: 'A confirmar']);
-                $clienteId = (int)$db->lastInsertId();
+                $clienteId = (int)$pdo->lastInsertId();
 
-                $servicioId = $sol['servicio_id'] ?: $db->query('SELECT MIN(id) FROM servicios')->fetchColumn();
-                $precio = $db->prepare('SELECT precio_base FROM servicios WHERE id = ?');
+                $servicioId = $sol['servicio_id'] ?: $pdo->query('SELECT MIN(id) FROM servicios')->fetchColumn();
+                $precio = $pdo->prepare('SELECT precio_base FROM servicios WHERE id = ?');
                 $precio->execute([$servicioId]);
-                $db->prepare('INSERT INTO trabajos (cliente_id, servicio_id, total, observaciones) VALUES (?, ?, ?, ?)')
+                $pdo->prepare('INSERT INTO trabajos (cliente_id, servicio_id, total, observaciones) VALUES (?, ?, ?, ?)')
                    ->execute([$clienteId, $servicioId, $precio->fetchColumn() ?: 0, $sol['mensaje']]);
 
-                $db->prepare("UPDATE solicitudes SET estado = 'convertida', cliente_id = ? WHERE id = ?")
+                $pdo->prepare("UPDATE solicitudes SET estado = 'convertida', cliente_id = ? WHERE id = ?")
                    ->execute([$clienteId, $id]);
-                $db->commit();
+                $pdo->commit();
                 flash('Se creó el cliente y un trabajo pendiente. Ahora agendalo en Trabajos.');
             } catch (PDOException $ex) {
-                $db->rollBack();
-                flash(mensaje_error($ex), 'danger');
+                $pdo->rollBack();
+                flash(mensajeError($ex), 'danger');
             }
         }
     }
     redirigir('solicitudes.php');
 }
 
-$solicitudes = $db->query(
+$solicitudes = $pdo->query(
     "SELECT so.*, s.nombre AS servicio FROM solicitudes so LEFT JOIN servicios s ON s.id = so.servicio_id
      ORDER BY so.estado = 'pendiente' DESC, so.fecha DESC"
 )->fetchAll();
 
-layout_inicio('Solicitudes desde la web', 'solicitudes');
+$titulo = 'Solicitudes desde la web';
+$activo = 'solicitudes';
+require __DIR__ . '/../includes/header.php';
 ?>
 <div class="card shadow-sm">
     <div class="table-responsive">
@@ -71,20 +71,20 @@ layout_inicio('Solicitudes desde la web', 'solicitudes');
             <?php foreach ($solicitudes as $s): ?>
                 <tr>
                     <td class="text-nowrap"><?= date('d/m H:i', strtotime($s['fecha'])) ?></td>
-                    <td><?= e($s['nombre']) ?><br><small class="text-muted"><?= e($s['direccion']) ?></small></td>
-                    <td class="text-nowrap"><a href="https://wa.me/549<?= e(preg_replace('/\D/', '', $s['telefono'])) ?>" target="_blank" rel="noopener"><?= e($s['telefono']) ?></a></td>
-                    <td><?= e($s['servicio'] ?? 'Otro') ?></td>
-                    <td class="small"><?= e($s['mensaje']) ?></td>
-                    <td><?= badge_estado($s['estado']) ?></td>
+                    <td><?= h($s['nombre']) ?><br><small class="text-muted"><?= h($s['direccion']) ?></small></td>
+                    <td class="text-nowrap"><a href="https://wa.me/549<?= h(preg_replace('/\D/', '', $s['telefono'])) ?>" target="_blank" rel="noopener"><?= h($s['telefono']) ?></a></td>
+                    <td><?= h($s['servicio'] ?? 'Otro') ?></td>
+                    <td class="small"><?= h($s['mensaje']) ?></td>
+                    <td><?= badgeEstado($s['estado']) ?></td>
                     <td class="text-end text-nowrap">
                         <?php if ($s['estado'] === 'pendiente' || $s['estado'] === 'contactado'): ?>
                             <form method="post" class="d-inline">
-                                <?= csrf_campo() ?><input type="hidden" name="id" value="<?= $s['id'] ?>">
+                                <?= campoCsrf() ?><input type="hidden" name="id" value="<?= $s['id'] ?>">
                                 <button name="accion" value="convertir" class="btn btn-sm btn-marca">Convertir en trabajo</button>
                                 <?php if ($s['estado'] === 'pendiente'): ?>
                                     <button name="accion" value="contactado" class="btn btn-sm btn-outline-secondary">Contactado</button>
                                 <?php endif; ?>
-                                <button name="accion" value="descartada" class="btn btn-sm btn-outline-danger" onclick="return confirm(<?= e(json_encode('¿Seguro que querés descartar la solicitud de ' . $s['nombre'] . "?
+                                <button name="accion" value="descartada" class="btn btn-sm btn-outline-danger" onclick="return confirm(<?= h(json_encode('¿Seguro que querés descartar la solicitud de ' . $s['nombre'] . "?
 
 Se va a borrar y no va a aparecer más, ni acá ni en el programa de escritorio.", JSON_UNESCAPED_UNICODE)) ?>)">Descartar</button>
                             </form>
@@ -97,4 +97,4 @@ Se va a borrar y no va a aparecer más, ni acá ni en el programa de escritorio.
         </table>
     </div>
 </div>
-<?php layout_fin();
+<?php require __DIR__ . '/../includes/footer.php';

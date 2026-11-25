@@ -1,19 +1,17 @@
 <?php
-require_once __DIR__ . '/../app/auth.php';
-require_once __DIR__ . '/../app/layout.php';
-requerir_login();
+require_once __DIR__ . '/../includes/funciones.php';
+requerirLogin();
 
-$db = db();
 
-$db->exec("UPDATE presupuestos SET estado = 'vencido' WHERE estado = 'pendiente' AND vence < CURDATE()");
+$pdo->exec("UPDATE presupuestos SET estado = 'vencido' WHERE estado = 'pendiente' AND vence < CURDATE()");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_verificar();
+    verificarCsrf();
     $accion = $_POST['accion'] ?? '';
 
     if ($accion === 'nuevo') {
         $cliente = (int)($_POST['cliente_id'] ?? 0);
-        $vence   = ($_POST['vence'] ?? '') !== '' ? $_POST['vence'] : null;
+        $vence   = ($_POST['vence'] ?? '') !== '' ? $_POST['vence'] : date('Y-m-d', strtotime('+15 days'));
 
         $items = [];
         foreach ($_POST['descripcion'] ?? [] as $i => $desc) {
@@ -38,25 +36,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $total = array_sum(array_map(fn($it) => $it[1] * $it[2], $items));
         try {
-            $db->beginTransaction();
-            $db->prepare('INSERT INTO presupuestos (cliente_id, fecha, vence, total) VALUES (?, CURDATE(), ?, ?)')
+            $pdo->beginTransaction();
+            $pdo->prepare('INSERT INTO presupuestos (cliente_id, fecha, vence, total) VALUES (?, CURDATE(), ?, ?)')
                ->execute([$cliente, $vence, $total]);
-            $id = (int)$db->lastInsertId();
-            $st = $db->prepare('INSERT INTO presupuesto_items (presupuesto_id, descripcion, cantidad, precio_unitario) VALUES (?, ?, ?, ?)');
+            $id = (int)$pdo->lastInsertId();
+            $st = $pdo->prepare('INSERT INTO presupuesto_items (presupuesto_id, descripcion, cantidad, precio_unitario) VALUES (?, ?, ?, ?)');
             foreach ($items as $it) $st->execute([$id, ...$it]);
-            $db->commit();
+            $pdo->commit();
             flash("Presupuesto N.º $id guardado.");
             redirigir("presupuesto.php?id=$id");
         } catch (PDOException $ex) {
-            $db->rollBack();
-            flash(mensaje_error($ex), 'danger');
+            $pdo->rollBack();
+            flash(mensajeError($ex), 'danger');
             redirigir('presupuestos.php?nuevo=1');
         }
     }
 
     if ($accion === 'estado' && ($_POST['estado'] ?? '') === 'rechazado') {
         $id = (int)($_POST['id'] ?? 0);
-        $st = $db->prepare("DELETE FROM presupuestos WHERE id = ? AND estado = 'pendiente'");
+        $st = $pdo->prepare("DELETE FROM presupuestos WHERE id = ? AND estado = 'pendiente'");
         $st->execute([$id]);
         flash($st->rowCount() ? 'Presupuesto rechazado y borrado.' : 'Ese presupuesto ya no está pendiente.',
               $st->rowCount() ? 'success' : 'warning');
@@ -64,9 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($accion === 'estado') {
-        $nuevo = in_array($_POST['estado'] ?? '', ['aceptado', 'rechazado'], true) ? $_POST['estado'] : null;
+        $nuevo = in_array($_POST['estado'] ?? '', ['aceptado'], true) ? $_POST['estado'] : null;
         $id = (int)($_POST['id'] ?? 0);
-        $st = $db->prepare("UPDATE presupuestos SET estado = ? WHERE id = ? AND estado = 'pendiente'");
+        $st = $pdo->prepare("UPDATE presupuestos SET estado = ? WHERE id = ? AND estado = 'pendiente'");
         $st->execute([$nuevo, $id]);
         flash($nuevo && $st->rowCount() ? "Presupuesto marcado como $nuevo." : 'Ese presupuesto ya no está pendiente.',
               $st->rowCount() ? 'success' : 'warning');
@@ -74,26 +72,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$presupuestos = $db->query(
+$presupuestos = $pdo->query(
     'SELECT p.*, c.nombre AS cliente FROM presupuestos p JOIN clientes c ON c.id = p.cliente_id
      ORDER BY p.fecha DESC, p.id DESC')->fetchAll();
-$clientes   = $db->query('SELECT id, nombre, direccion FROM clientes WHERE activo = 1 ORDER BY nombre')->fetchAll();
-$servicios  = $db->query('SELECT nombre, precio_base AS precio FROM servicios ORDER BY nombre')->fetchAll();
-$materiales = $db->query("SELECT CONCAT(nombre, ' (', unidad, ')') AS nombre, precio FROM materiales ORDER BY nombre")->fetchAll();
+$clientes   = $pdo->query('SELECT id, nombre, direccion FROM clientes WHERE activo = 1 ORDER BY nombre')->fetchAll();
+$servicios  = $pdo->query('SELECT nombre, precio_base AS precio FROM servicios ORDER BY nombre')->fetchAll();
+$materiales = $pdo->query("SELECT CONCAT(nombre, ' (', unidad, ')') AS nombre, precio FROM materiales ORDER BY nombre")->fetchAll();
 
-layout_inicio('Presupuestos', 'presupuestos');
+$titulo = 'Presupuestos';
+$activo = 'presupuestos';
+require __DIR__ . '/../includes/header.php';
 ?>
 <?php if (isset($_GET['nuevo'])): ?>
     <form method="post" class="card card-body shadow-sm mb-4" id="form-presupuesto">
         <h2 class="h5">Nuevo presupuesto</h2>
-        <?= csrf_campo() ?><input type="hidden" name="accion" value="nuevo">
+        <?= campoCsrf() ?><input type="hidden" name="accion" value="nuevo">
         <div class="row g-3 mb-3">
             <div class="col-md-6">
                 <label class="form-label">Cliente *</label>
                 <select class="form-select" name="cliente_id" required>
                     <option value="">Elegí…</option>
                     <?php foreach ($clientes as $c): ?>
-                        <option value="<?= $c['id'] ?>"><?= e($c['nombre'] . ' - ' . $c['direccion']) ?></option>
+                        <option value="<?= $c['id'] ?>"><?= h($c['nombre'] . ' - ' . $c['direccion']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -107,10 +107,10 @@ layout_inicio('Presupuestos', 'presupuestos');
                 <select class="form-select" id="rapido">
                     <option value="">Servicio o material…</option>
                     <optgroup label="Servicios">
-                        <?php foreach ($servicios as $s): ?><option data-precio="<?= (float)$s['precio'] ?>"><?= e($s['nombre']) ?></option><?php endforeach; ?>
+                        <?php foreach ($servicios as $s): ?><option data-precio="<?= (float)$s['precio'] ?>"><?= h($s['nombre']) ?></option><?php endforeach; ?>
                     </optgroup>
                     <optgroup label="Materiales">
-                        <?php foreach ($materiales as $m): ?><option data-precio="<?= (float)$m['precio'] ?>"><?= e($m['nombre']) ?></option><?php endforeach; ?>
+                        <?php foreach ($materiales as $m): ?><option data-precio="<?= (float)$m['precio'] ?>"><?= h($m['nombre']) ?></option><?php endforeach; ?>
                     </optgroup>
                 </select>
             </div>
@@ -188,18 +188,18 @@ layout_inicio('Presupuestos', 'presupuestos');
             <?php foreach ($presupuestos as $p): ?>
                 <tr>
                     <td><?= str_pad($p['id'], 5, '0', STR_PAD_LEFT) ?></td>
-                    <td><?= e($p['cliente']) ?></td>
+                    <td><?= h($p['cliente']) ?></td>
                     <td><?= date('d/m/Y', strtotime($p['fecha'])) ?></td>
                     <td><?= $p['vence'] ? date('d/m/Y', strtotime($p['vence'])) : '' ?></td>
                     <td class="text-end"><?= pesos($p['total']) ?></td>
-                    <td><?= badge_estado($p['estado']) ?></td>
+                    <td><?= badgeEstado($p['estado']) ?></td>
                     <td class="text-end text-nowrap">
                         <a class="btn btn-sm btn-outline-primary" href="presupuesto.php?id=<?= $p['id'] ?>">Ver / PDF</a>
                         <?php if ($p['estado'] === 'pendiente'): ?>
                             <form method="post" class="d-inline">
-                                <?= csrf_campo() ?><input type="hidden" name="accion" value="estado"><input type="hidden" name="id" value="<?= $p['id'] ?>">
+                                <?= campoCsrf() ?><input type="hidden" name="accion" value="estado"><input type="hidden" name="id" value="<?= $p['id'] ?>">
                                 <button class="btn btn-sm btn-outline-success" name="estado" value="aceptado">Aceptado</button>
-                                <button class="btn btn-sm btn-outline-danger" name="estado" value="rechazado" onclick="return confirm(<?= e(json_encode('¿Seguro que querés rechazar el presupuesto N.º ' . str_pad($p['id'], 5, '0', STR_PAD_LEFT) . ' de ' . $p['cliente'] . "?
+                                <button class="btn btn-sm btn-outline-danger" name="estado" value="rechazado" onclick="return confirm(<?= h(json_encode('¿Seguro que querés rechazar el presupuesto N.º ' . str_pad($p['id'], 5, '0', STR_PAD_LEFT) . ' de ' . $p['cliente'] . "?
 
 Se va a borrar y no va a aparecer más, ni acá ni en el programa de escritorio.", JSON_UNESCAPED_UNICODE)) ?>)">Rechazado</button>
                             </form>
@@ -212,4 +212,4 @@ Se va a borrar y no va a aparecer más, ni acá ni en el programa de escritorio.
         </table>
     </div>
 </div>
-<?php layout_fin();
+<?php require __DIR__ . '/../includes/footer.php';
